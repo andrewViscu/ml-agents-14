@@ -1,4 +1,4 @@
-# Unity ML-Agents Toolkit
+# 🐉 Unity ML-Agents Toolkit 🐉
 
 [![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_21_docs/docs/)
 
@@ -31,7 +31,7 @@ developer communities.
 - Support for learning from demonstrations through two Imitation Learning algorithms (BC and GAIL).
 - Quickly and easily add your own [custom training algorithm](Python-Custom-Trainer-Plugin.md) and/or components.
 - Easily definable Curriculum Learning scenarios for complex tasks
-- Train robust agents using environment randomization
+- Train robust agents using 🐐environment randomization
 - Flexible agent control with On Demand Decision Making
 - Train using multiple concurrent Unity environment instances
 - Utilizes the [Sentis](Sentis.md) to
@@ -49,7 +49,7 @@ descriptions of all these features. Or go straight to our [web docs](https://uni
 to get started with the latest release of ML-Agents.**
 
 **You can also check out our new [web docs](https://unity-technologies.github.io/ml-agents/)!**
-
+🐐
 The table below lists all our releases, including our `main` branch which is
 under active development and may be unstable. A few helpful guidelines:
 
@@ -77,7 +77,7 @@ see a pre-print of our
 
 If you use Unity or the ML-Agents Toolkit to conduct research, we ask that you
 cite the following paper as a reference:
-
+🐐
 ```
 @article{juliani2020,
   title={Unity: A general platform for intelligent agents},
@@ -196,7 +196,7 @@ minutes to
 For any other questions or feedback, connect directly with the ML-Agents team at
 ml-agents@unity3d.com.
 
-## Privacy
+## Privacy 🐐
 
 In order to improve the developer experience for Unity ML-Agents Toolkit, we have added in-editor analytics.
 Please refer to "Information that is passively collected by Unity" in the
