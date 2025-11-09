@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
-import subprocess
 import sys
 import os
-import csv
 import re
 from datetime import datetime
-from csv_table_creator import create_csv_table, write_csv_row, get_csv_columns
+from csv_table_creator import create_csv_table
+from training_runner import run_training
+
+# ----------- Game Name Lists -----------
+single_agent_games = ["Basic", "3DBall", "3DBallHard", "3DBall_randomize", "GridWorld", "PushBlock", "WallJump", "Crawler", "Hallway"]
+multi_agent_games = ["SoccerTwos", "Tennis", "BouncyBalls"]
 
 # ----------- Mikulas's Code -----------
 
@@ -48,9 +51,6 @@ def get_environment(chosen_game):
     Returns:
         str: Environment identifier.
     """
-    
-    single_agent_games = ["Basic", "3DBall", "3DBallHard", "3DBall_randomize", "GridWorld", "PushBlock", "WallJump", "Crawler", "Hallway"]
-    multi_agent_games = ["SoccerTwos", "Tennis", "BouncyBalls"]
     
     if chosen_game in single_agent_games:
         return "single-agent"
@@ -206,104 +206,18 @@ def main():
     
     # Create CSV table
     csv_output_path = "training_data.csv"
-    columns = get_csv_columns()
     
     if not create_csv_table(csv_output_path):
         sys.exit(1)
     
-    # Construct the command
-    command = ["mlagents-learn", config_file_path, "--run-id", run_id]
-    
-    print(f"\nRunning command: {' '.join(command)}\n")
-    
-    # Run the command and capture output in real-time
+    # Run the training command and process output
     try:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            universal_newlines=True,
-            bufsize=1
-        )
-        
-        # Variables to store current metrics for a step
-        current_step = None
-        current_mean_reward = None
-        current_std_reward = None
-        current_policy_loss = None
-        written_steps = set()  # Track steps we've already written to avoid duplicates
-        
-        # Read output line by line
-        for line in process.stdout:
-            # Print the line to console
-            print(line, end='')
-            
-            # Parse the line for metrics
-            metrics = parse_mlagents_output(line)
-            
-            # Update current step if found
-            if metrics["step"] is not None:
-                current_step = metrics["step"]
-            
-            # Update current metrics if found
-            if metrics["mean_reward"] is not None:
-                current_mean_reward = metrics["mean_reward"]
-            if metrics["std_reward"] is not None:
-                current_std_reward = metrics["std_reward"]
-            if metrics["policy_loss"] is not None:
-                current_policy_loss = metrics["policy_loss"]
-            
-            # If we have a step and at least one metric, and haven't written this step yet, write to CSV
-            if current_step is not None and current_step not in written_steps:
-                if current_mean_reward is not None or current_std_reward is not None or current_policy_loss is not None:
-                    # Calculate general data (called on each line with metrics)
-                    general_data = calculate_general_data(chosen_game, learning_algorithm, run_id, current_step)
-                    
-                    # Prepare row data
-                    row_data = {
-                        "step": current_step,
-                        "mean_reward": current_mean_reward if current_mean_reward is not None else '',
-                        "std_reward": current_std_reward if current_std_reward is not None else '',
-                        "policy_loss": current_policy_loss if current_policy_loss is not None else '',
-                        "timestamp": general_data["timestamp"],
-                        "run_id": general_data["run_id"],
-                        "environment": general_data["environment"],
-                        "algorithm": general_data["algorithm"],
-                        "success_rates_percentage": '',  # TODO: Implement when available
-                        "cumulative_reward": '',  # TODO: Implement when available
-                        "steps_per_episode": '',  # TODO: Implement when available
-                        "training_time": '',  # TODO: Implement when available
-                        "memory_usage_avg_mb": '',  # TODO: Implement when available
-                        "memory_usage_peak_mb": '',  # TODO: Implement when available
-                        "cpu_usage_avg_mb": '',  # TODO: Implement when available
-                        "cpu_usage_peak_mb": '',  # TODO: Implement when available
-                        "gpu_usage_avg_mb": '',  # TODO: Implement when available
-                        "gpu_usage_peak_mb": '',  # TODO: Implement when available
-                        "entropy": '',  # TODO: Implement when available
-                        "value_loss": ''  # TODO: Implement when available
-                    }
-                    
-                    # Write to CSV
-                    write_csv_row(csv_output_path, row_data, columns)
-                    written_steps.add(current_step)
-        
-        # Wait for process to complete
-        process.wait()
-        
-        if process.returncode == 0:
-            print("\n\nCommand completed successfully!")
-            print(f"Data saved to '{csv_output_path}'")
-        else:
-            print(f"\n\nCommand completed with exit code {process.returncode}")
-            sys.exit(process.returncode)
-            
+        exit_code = run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path)
+        if exit_code != 0:
+            sys.exit(exit_code)
     except FileNotFoundError:
-        print("\nError: 'mlagents-learn' command not found. Make sure ML-Agents is installed and in your PATH.")
         sys.exit(1)
     except KeyboardInterrupt:
-        print("\n\nCommand interrupted by user.")
-        if process:
-            process.terminate()
         sys.exit(1)
     except Exception as e:
         print(f"\nError: {e}")
