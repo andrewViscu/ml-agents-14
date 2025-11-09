@@ -4,21 +4,22 @@ import os
 from datetime import datetime
 
 
-def create_csv_table(output_path="training_data.csv"):
+def get_csv_columns():
     """
-    Create an empty CSV table with predefined columns.
+    Get the list of CSV column headers.
     
-    Args:
-        output_path (str): Path where the CSV file will be created. Defaults to "training_data.csv".
+    Returns:
+        list: List of column names in order.
     """
-
-    # Define the column headers
-    columns = [
+    return [
+        "step",
+        "mean_reward",
+        "std_reward",
+        "policy_loss",
         "timestamp",
         "run_id",
         "environment",
         "algorithm",
-        "step",
         "success_rates_percentage",
         "cumulative_reward",
         "steps_per_episode",
@@ -30,16 +31,28 @@ def create_csv_table(output_path="training_data.csv"):
         "gpu_usage_avg_mb",
         "gpu_usage_peak_mb",
         "entropy",
-        "policy_loss",
         "value_loss"
     ]
+
+
+def create_csv_table(output_path="training_data.csv"):
+    """
+    Create a CSV table with predefined columns.
+    
+    Args:
+        output_path (str): Path where the CSV file will be created. Defaults to "training_data.csv".
+    
+    Returns:
+        bool: True if CSV was created successfully, False otherwise.
+    """
+    columns = get_csv_columns()
     
     # Check if file already exists
     if os.path.exists(output_path):
         response = input(f"File '{output_path}' already exists. Overwrite? (y/n): ").strip().lower()
         if response != 'y':
             print("Operation cancelled.")
-            return
+            return False
     
     # Create the CSV file with headers
     try:
@@ -48,11 +61,29 @@ def create_csv_table(output_path="training_data.csv"):
             writer.writerow(columns)
         
         print(f"Successfully created CSV table at '{output_path}'")
-        print(f"Columns: {', '.join(columns)}")
-        print(f"Total columns: {len(columns)}")
+        return True
         
     except Exception as e:
         print(f"Error creating CSV file: {e}")
+        return False
+
+
+def write_csv_row(output_path, row_data, columns):
+    """
+    Write a row of data to the CSV file.
+    
+    Args:
+        output_path (str): Path to the CSV file.
+        row_data (dict): Dictionary containing the row data.
+        columns (list): List of column names in order.
+    """
+    try:
+        with open(output_path, 'a', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            row = [row_data.get(col, '') for col in columns]
+            writer.writerow(row)
+    except Exception as e:
+        print(f"Error writing to CSV file: {e}")
 
 
 def main():
