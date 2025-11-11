@@ -204,8 +204,16 @@ def main():
     path_parts = os.path.normpath(config_file_path).split(os.sep)
     learning_algorithm = path_parts[1] if len(path_parts) > 1 else None
     
-    # Create CSV table
-    csv_output_path = "training_data.csv"
+    # Create CSV table in training-data folder
+    # Get the project root directory (one level up from data-extraction-scripts)
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)
+    training_data_dir = os.path.join(project_root, "training-data")
+    
+    # Ensure training-data directory exists
+    os.makedirs(training_data_dir, exist_ok=True)
+    
+    csv_output_path = os.path.join(training_data_dir, "training_data.csv")
     
     if not create_csv_table(csv_output_path):
         sys.exit(1)
