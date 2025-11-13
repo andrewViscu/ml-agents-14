@@ -14,20 +14,6 @@ def get_timestamp():
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_run_id(run_id_name):
-    """
-    Gets unique identifier for each training run to track specific runs and
-    reference during analysis.
-    
-    Args:
-        run_id_name (str): The run ID name provided by the user.
-    
-    Returns:
-        str: Unique run identifier.
-    """
-    return run_id_name
-
-
 def get_environment(chosen_game):
     """
     Identifies the unity game environment to compare algorithm performance
@@ -46,30 +32,6 @@ def get_environment(chosen_game):
         return "multi-agent"
     else:
         return "unknown"
-
-
-def get_algorithm(learning_algorithm):
-    """
-    Identifies the reinforcement learning algorithm used.
-    
-    Returns:
-        str: Algorithm identifier.
-    """
-
-    return learning_algorithm
-
-
-def get_step(step_value):
-    """
-    Gets training progress indicator to calculate rewards.
-    
-    Args:
-        step_value (int): The step value extracted from mlagents-learn output.
-    
-    Returns:
-        int: Current training step.
-    """
-    return step_value
 
 
 def calculate_general_data(chosen_game, learning_algorithm, run_id_name, step_value):
@@ -91,10 +53,10 @@ def calculate_general_data(chosen_game, learning_algorithm, run_id_name, step_va
             - step: Training progress indicator
     """
     timestamp = get_timestamp()
-    run_id = get_run_id(run_id_name)
+    run_id = run_id_name
     environment = get_environment(chosen_game)
-    algorithm = get_algorithm(learning_algorithm)
-    step = get_step(step_value)
+    algorithm = learning_algorithm
+    step = step_value
     
     return {
         "timestamp": timestamp,
