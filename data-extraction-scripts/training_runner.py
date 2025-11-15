@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import subprocess
 from csv_table_creator import write_csv_row, get_csv_columns
-from data_extraction_script import parse_mlagents_output
 from general_data_metrics import calculate_general_data
 from performance_data_metrics import calculate_performance_data
 
@@ -47,6 +46,8 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
         current_std_reward = None
         current_policy_loss = None
         written_steps = set()  # Track steps we've already written to avoid duplicates
+        
+        from data_extraction_script import parse_mlagents_output
         
         # Read output line by line
         for line in process.stdout:

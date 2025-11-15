@@ -86,6 +86,7 @@ dist/
 build/
 
 # Python virtual environment
+mlagents-env/
 venv/
 .mypy_cache/
 
