@@ -87,6 +87,7 @@ build/
 
 # Python virtual environment
 mlagents-env/
+venv-3.10/
 venv/
 .mypy_cache/
 
