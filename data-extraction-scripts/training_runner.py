@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 import subprocess
+import time
 from csv_table_creator import write_csv_row, get_csv_columns
 from general_data_metrics import calculate_general_data
-from performance_data_metrics import calculate_performance_data
+from resource_py_script import ResourceMonitor
 
 def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path):
     """
@@ -40,6 +41,13 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
             bufsize=1
         )
         
+        # Start resource monitoring for the training process
+        resource_monitor = ResourceMonitor(ml_pid=process.pid, interval_s=1.0)
+        resource_monitor.start()
+        
+        # Give the monitor a moment to start collecting data
+        time.sleep(0.5)
+        
         # Variables to store current metrics for a step
         current_step = None
         current_mean_reward = None
@@ -75,9 +83,13 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
 
                     # Calculate general, performance and resource usage data (called on each line with metrics)
                     general_data = calculate_general_data(chosen_game, learning_algorithm, run_id, current_step)
-                    performance_data = calculate_performance_data()
+                    resource_usage_data = resource_monitor.calculate_resource_usage_data()
 
-                    # Prepare row data
+                    # Prepare row data - handle None values properly
+                    def format_value(val):
+                        """Convert None to empty string, otherwise return the value."""
+                        return '' if val is None else val
+                    
                     row_data = {
                         "step": current_step,
                         "mean_reward": current_mean_reward if current_mean_reward is not None else '',
@@ -87,18 +99,13 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
                         "run_id": general_data["run_id"],
                         "environment": general_data["environment"],
                         "algorithm": general_data["algorithm"],
-                        "success_rates_percentage": '',  # TODO: Implement when available
-                        "cumulative_reward": '',  # TODO: Implement when available
-                        "steps_per_episode": '',  # TODO: Implement when available
-                        "training_time": '',  # TODO: Implement when available
-                        "memory_usage_avg_mb": '',  # TODO: Implement when available
-                        "memory_usage_peak_mb": '',  # TODO: Implement when available
-                        "cpu_usage_avg_mb": '',  # TODO: Implement when available
-                        "cpu_usage_peak_mb": '',  # TODO: Implement when available
-                        "gpu_usage_avg_mb": '',  # TODO: Implement when available
-                        "gpu_usage_peak_mb": '',  # TODO: Implement when available
-                        "entropy": '',  # TODO: Implement when available
-                        "value_loss": ''  # TODO: Implement when available
+                        "memory_usage_avg_mb": format_value(resource_usage_data.get("memory usage avg mb")),
+                        "memory_usage_peak_mb": format_value(resource_usage_data.get("memory usage peak mb")),
+                        "cpu_usage_avg_mb": format_value(resource_usage_data.get("cpu usage avg percent")),
+                        "cpu_usage_peak_mb": format_value(resource_usage_data.get("cpu usage peak percent")),
+                        "gpu_usage_avg_mb": format_value(resource_usage_data.get("gpu usage avg mb")),
+                        "gpu_usage_peak_mb": format_value(resource_usage_data.get("gpu usage peak mb")),
+                        "entropy": general_data["entropy"],
                     }
                     
                     # Write to CSV
@@ -107,6 +114,10 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
         
         # Wait for process to complete
         process.wait()
+        
+        # Stop resource monitoring
+        resource_monitor.stop()
+        resource_monitor.join(timeout=2.0)  # Wait up to 2 seconds for thread to finish
         
         if process.returncode == 0:
             print("\n\nCommand completed successfully!")
@@ -121,6 +132,9 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
         raise
     except KeyboardInterrupt:
         print("\n\nCommand interrupted by user.")
+        if 'resource_monitor' in locals():
+            resource_monitor.stop()
+            resource_monitor.join(timeout=2.0)
         if process:
             process.terminate()
         raise

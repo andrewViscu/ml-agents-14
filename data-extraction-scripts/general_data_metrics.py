@@ -33,6 +33,12 @@ def get_environment(chosen_game):
     else:
         return "unknown"
 
+# TODO: Implement
+def get_entropy():
+    """
+    Records the entropy of the training session.
+    """
+    return None
 
 def calculate_general_data(chosen_game, learning_algorithm, run_id_name, step_value):
     """
@@ -51,17 +57,19 @@ def calculate_general_data(chosen_game, learning_algorithm, run_id_name, step_va
             - environment: Unity game environment identifier
             - algorithm: Reinforcement learning algorithm used
             - step: Training progress indicator
+            - entropy: Entropy of the training session
     """
     timestamp = get_timestamp()
     run_id = run_id_name
     environment = get_environment(chosen_game)
     algorithm = learning_algorithm
     step = step_value
-    
+    entropy = get_entropy()
     return {
         "timestamp": timestamp,
         "run_id": run_id,
         "environment": environment,
         "algorithm": algorithm,
-        "step": step
+        "step": step,
+        "entropy": entropy
     }
