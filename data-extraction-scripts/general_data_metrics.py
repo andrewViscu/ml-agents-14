@@ -33,13 +33,6 @@ def get_environment(chosen_game):
     else:
         return "unknown"
 
-# TODO: Implement
-def get_entropy():
-    """
-    Records the entropy of the training session.
-    """
-    return None
-
 def calculate_general_data(chosen_game, learning_algorithm, run_id_name, step_value):
     """
     Calculates general data metrics for training session.
@@ -64,12 +57,10 @@ def calculate_general_data(chosen_game, learning_algorithm, run_id_name, step_va
     environment = get_environment(chosen_game)
     algorithm = learning_algorithm
     step = step_value
-    entropy = get_entropy()
     return {
         "timestamp": timestamp,
         "run_id": run_id,
         "environment": environment,
         "algorithm": algorithm,
         "step": step,
-        "entropy": entropy
     }

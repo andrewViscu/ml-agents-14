@@ -15,7 +15,6 @@ def get_csv_columns():
         "step",
         "mean_reward",
         "std_reward",
-        "policy_loss",
         "timestamp",
         "run_id",
         "environment",
@@ -26,8 +25,6 @@ def get_csv_columns():
         "cpu_usage_peak_mb",
         "gpu_usage_avg_mb",
         "gpu_usage_peak_mb",
-        "entropy",
-        "value_loss"
     ]
 
 

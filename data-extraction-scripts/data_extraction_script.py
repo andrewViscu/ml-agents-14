@@ -19,13 +19,11 @@ def parse_mlagents_output(line):
             - step: Training step (int or None)
             - mean_reward: Mean reward (float or None)
             - std_reward: Standard deviation of reward (float or None)
-            - policy_loss: Policy loss (float or None)
     """
     metrics = {
         "step": None,
         "mean_reward": None,
         "std_reward": None,
-        "policy_loss": None
     }
     
     # Extract step: "Step: 1000" or similar
@@ -43,10 +41,6 @@ def parse_mlagents_output(line):
     if std_reward_match:
         metrics["std_reward"] = float(std_reward_match.group(1))
     
-    # Extract policy loss: "Losses/Policy Loss: 0.123" or "Policy Loss: 0.123" or similar
-    policy_loss_match = re.search(r'(?:Losses/)?Policy\s+Loss[:\s]+([+-]?\d*\.?\d+)', line, re.IGNORECASE)
-    if policy_loss_match:
-        metrics["policy_loss"] = float(policy_loss_match.group(1))
     
     return metrics
 

@@ -52,7 +52,6 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
         current_step = None
         current_mean_reward = None
         current_std_reward = None
-        current_policy_loss = None
         written_steps = set()  # Track steps we've already written to avoid duplicates
         
         from data_extraction_script import parse_mlagents_output
@@ -74,12 +73,10 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
                 current_mean_reward = metrics["mean_reward"]
             if metrics["std_reward"] is not None:
                 current_std_reward = metrics["std_reward"]
-            if metrics["policy_loss"] is not None:
-                current_policy_loss = metrics["policy_loss"]
             
             # If we have a step and at least one metric, and haven't written this step yet, write to CSV
             if current_step is not None and current_step not in written_steps:
-                if current_mean_reward is not None or current_std_reward is not None or current_policy_loss is not None:
+                if current_mean_reward is not None or current_std_reward is not None:
 
                     # Calculate general, performance and resource usage data (called on each line with metrics)
                     general_data = calculate_general_data(chosen_game, learning_algorithm, run_id, current_step)
@@ -94,7 +91,6 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
                         "step": current_step,
                         "mean_reward": current_mean_reward if current_mean_reward is not None else '',
                         "std_reward": current_std_reward if current_std_reward is not None else '',
-                        "policy_loss": current_policy_loss if current_policy_loss is not None else '',
                         "timestamp": general_data["timestamp"],
                         "run_id": general_data["run_id"],
                         "environment": general_data["environment"],
@@ -105,7 +101,6 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
                         "cpu_usage_peak_mb": format_value(resource_usage_data.get("cpu usage peak percent")),
                         "gpu_usage_avg_mb": format_value(resource_usage_data.get("gpu usage avg mb")),
                         "gpu_usage_peak_mb": format_value(resource_usage_data.get("gpu usage peak mb")),
-                        "entropy": general_data["entropy"],
                     }
                     
                     # Write to CSV
