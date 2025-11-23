@@ -14,6 +14,7 @@ def get_csv_columns():
     return [
         "step",
         "mean_reward",
+        "mean_group_reward",
         "std_reward",
         "timestamp",
         "run_id",

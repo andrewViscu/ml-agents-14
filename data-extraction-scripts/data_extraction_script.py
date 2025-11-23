@@ -19,11 +19,13 @@ def parse_mlagents_output(line):
             - step: Training step (int or None)
             - mean_reward: Mean reward (float or None)
             - std_reward: Standard deviation of reward (float or None)
+            - mean_group_reward: Mean Group reward (float or None)
     """
     metrics = {
         "step": None,
         "mean_reward": None,
         "std_reward": None,
+        "mean_group_reward": None,
     }
     
     # Extract step: "Step: 1000" or similar
@@ -32,14 +34,18 @@ def parse_mlagents_output(line):
         metrics["step"] = int(step_match.group(1))
     
     # Extract mean reward: "Mean Reward: 1.234" or similar
-    mean_reward_match = re.search(r'Mean Reward:\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
+    mean_reward_match = re.search(r'Mean Reward:\\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
     if mean_reward_match:
         metrics["mean_reward"] = float(mean_reward_match.group(1))
     
     # Extract std reward: "Std of Reward: 0.123" or "Std of Reward: 0.123" or similar
-    std_reward_match = re.search(r'Std\s+of\s+Reward:\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
+    std_reward_match = re.search(r'Std\s+of\s+Reward:\\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
     if std_reward_match:
         metrics["std_reward"] = float(std_reward_match.group(1))
+    
+    mean_group_reward_match = re.search(r'Mean Group Reward:\\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
+    if mean_group_reward_match:
+        metrics["mean_group_reward"] = float(mean_group_reward_match.group(1))
     
     
     return metrics
