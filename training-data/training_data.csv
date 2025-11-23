@@ -1,3 +1,4 @@
 step,mean_reward,mean_group_reward,std_reward,timestamp,run_id,environment,algorithm,memory_usage_avg_mb,memory_usage_peak_mb,cpu_usage_avg_mb,cpu_usage_peak_mb,gpu_usage_avg_mb,gpu_usage_peak_mb
 10000,0.0,-0.021,,2025-11-23 08:54:55,SCTWRUN1,multi-agent,poca,584.8423295454545,707.015625,74.83636363636361,1268.8,,
 20000,0.0,-0.143,,2025-11-23 08:55:24,SCTWRUN1,multi-agent,poca,661.0806934931506,795.8125,66.15342465753426,1268.8,,
+30000,0.0,-0.182,,2025-11-23 08:55:56,SCTWRUN1,multi-agent,poca,884.1330357142857,1434.328125,70.67809523809527,1268.8,,
