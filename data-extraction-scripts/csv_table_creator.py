@@ -16,7 +16,7 @@ def get_csv_columns():
         "mean_reward",
         "mean_group_reward",
         "std_reward",
-        "timestamp",
+        "time_elapsed",
         "run_id",
         "environment",
         "algorithm",

@@ -53,6 +53,7 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
         current_mean_reward = None
         current_std_reward = None
         current_mean_group_reward = None
+        current_time_elapsed = None
         written_steps = set()  # Track steps we've already written to avoid duplicates
         
         from data_extraction_script import parse_mlagents_output
@@ -76,6 +77,8 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
                 current_std_reward = metrics["std_reward"]
             if metrics["mean_group_reward"] is not None:
                 current_mean_group_reward = metrics["mean_group_reward"]
+            if metrics["time_elapsed"] is not None:
+                current_time_elapsed = metrics["time_elapsed"]
             
             # If we have a step and at least one metric, and haven't written this step yet, write to CSV
             if current_step is not None and current_step not in written_steps:
@@ -95,7 +98,7 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
                         "mean_reward": current_mean_reward if current_mean_reward is not None else '',
                         "mean_group_reward": current_mean_group_reward if current_mean_group_reward is not None else '',
                         "std_reward": current_std_reward if current_std_reward is not None else '',
-                        "timestamp": general_data["timestamp"],
+                        "time_elapsed": current_time_elapsed if current_time_elapsed is not None else '',
                         "run_id": general_data["run_id"],
                         "environment": general_data["environment"],
                         "algorithm": general_data["algorithm"],

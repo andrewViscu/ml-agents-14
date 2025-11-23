@@ -26,6 +26,7 @@ def parse_mlagents_output(line):
         "mean_reward": None,
         "std_reward": None,
         "mean_group_reward": None,
+        "time_elapsed": None,
     }
     
     # Extract step: "Step: 1000" or similar
@@ -46,6 +47,10 @@ def parse_mlagents_output(line):
     mean_group_reward_match = re.search(r'Mean Group Reward:\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
     if mean_group_reward_match:
         metrics["mean_group_reward"] = float(mean_group_reward_match.group(1))
+
+    time_elapsed_match = re.search(r'Time Elapsed:\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
+    if time_elapsed_match:
+        metrics["time_elapsed"] = float(time_elapsed_match.group(1))
     
     
     return metrics

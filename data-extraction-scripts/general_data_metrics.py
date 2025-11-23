@@ -4,15 +4,6 @@ from datetime import datetime
 single_agent_games = ["Basic", "3DBall", "3DBallHard", "3DBall_randomize", "GridWorld", "PushBlock", "WallJump", "Crawler", "Hallway"]
 multi_agent_games = ["SoccerTwos", "Tennis", "BouncyBalls"]
 
-def get_timestamp():
-    """
-    Records exact time of training.
-    
-    Returns:
-        str: Timestamp of the training session.
-    """
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
 
 def get_environment(chosen_game):
     """
@@ -45,20 +36,17 @@ def calculate_general_data(chosen_game, learning_algorithm, run_id_name, step_va
     
     Returns:
         dict: Dictionary containing general data metrics:
-            - timestamp: Exact time of training
             - run_id: Unique identifier for training run
             - environment: Unity game environment identifier
             - algorithm: Reinforcement learning algorithm used
             - step: Training progress indicator
             - entropy: Entropy of the training session
     """
-    timestamp = get_timestamp()
     run_id = run_id_name
     environment = get_environment(chosen_game)
     algorithm = learning_algorithm
     step = step_value
     return {
-        "timestamp": timestamp,
         "run_id": run_id,
         "environment": environment,
         "algorithm": algorithm,
