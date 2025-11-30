@@ -44,7 +44,6 @@ The list below contains the metrics that the scripts calculate and store. The na
 - **step** - The number of steps performed
 - **mean_reward** - The mean reward of the current run
 - **std_reward** - Standard deviation of the cumulative reward
-- **policy_loss** - The policy loss value measuring how much the policy was updated during the training run
 - **timestamp** - The time stamp of the training run
 - **run_id** - The run ID of the training session (used for distinction during custom machine learning model training)
 - **environment** - The environment in which the agent trains in (single or multi-agent)
@@ -55,5 +54,3 @@ The list below contains the metrics that the scripts calculate and store. The na
 - **cpu_usage_peak_mb** - Peak CPU usage in MB
 - **gpu_usage_avg_mb** - Average GPU usage in MB
 - **gpu_usage_peak_mb** - Peak GPU usage in MB
-- **entropy** - The entropy value measuring how much actions were performed randomly
-- **value_loss** - The value loss indicating the errors made in estimation
