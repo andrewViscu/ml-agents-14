@@ -19,6 +19,7 @@ from utils.data_loader import (
 )
 
 from models.random_forest import MyRandomForest, cross_validation, analyze_feature_importance
+
 from models.algorithm_predictor import (
     AlgorithmPredictor,
     EnvironmentAlgorithmPredictor,
@@ -29,41 +30,41 @@ from models.algorithm_predictor import (
 
 def run_reward_prediction(df, threshold=0.05):
     #predicts if a training step will have good or bad reward
-    
+
     print("\n" + "="*50)
     print("REWARD PREDICTION")
     print("="*50)
-    
+
     X, feature_names = extract_features(df)
     y = create_reward_labels(df, threshold=threshold)
-    
+
     print(f"\nFeatures: {feature_names}")
     print(f"Samples: {len(y)}")
     print(f"Class distribution:")
     print(f"  Bad reward (0): {(y == 0).sum()}")
     print(f"  Good reward (1): {(y == 1).sum()}")
-    
+
     #cross validation
     print("\n--- Cross Validation ---")
     mean_score, scores = cross_validation(X, y, k=5, model_class=MyRandomForest, n_trees=50)
     print(f"Average CV Score: {mean_score:.3f}")
-    
+
     #train final model
     print("\n--- Final Model ---")
     model = MyRandomForest(n_trees=100)
     model.fit(X, y)
-    
+
     train_preds = model.predict(X)
     from sklearn.metrics import accuracy_score
     train_acc = accuracy_score(y, train_preds)
     print(f"Training accuracy: {train_acc:.3f}")
-    
+
     #feature importance
     importance = analyze_feature_importance(model, feature_names)
     print("\nFeature Importance:")
     for name, imp in sorted(importance.items(), key=lambda x: x[1], reverse=True):
         print(f"  {name}: {imp:.3f}")
-    
+
     return model, mean_score
 
 
@@ -128,30 +129,30 @@ def run_algorithm_prediction(df):
 def run_environment_analysis(df):
     #analyzes performance by environment
     #builds framework for recommending algorithms per environment
-    
+
     print("\n" + "="*50)
     print("ENVIRONMENT ANALYSIS")
     print("="*50)
-    
+
     env_predictor = EnvironmentAlgorithmPredictor()
     scores, best = env_predictor.prepare_recommendation_data(df)
-    
+
     print("\nAlgorithm scores by environment:")
     print(scores.to_string())
-    
+
     print("\nBest algorithm per environment:")
     print(best.to_string())
-    
+
     return env_predictor
 
 
 def run_convergence_analysis(df):
     #analyzes if training runs are converging
-    
+
     print("\n" + "="*50)
     print("CONVERGENCE ANALYSIS")
     print("="*50)
-    
+
     for algo in df['algorithm'].unique():
         result, message = predict_convergence(df, algo)
         print(f"\n{algo.upper()}: {message}")
@@ -164,37 +165,37 @@ def main():
     parser.add_argument('--mode', type=str, default='all', choices=['reward', 'algorithm', 'environment', 'convergence', 'all'],
                         help='Which analysis to run')
     parser.add_argument('--threshold', type=float, default=0.05, help='Reward threshold for classification')
-    
+
     args = parser.parse_args()
-    
+
     #load data
     print("Loading data...")
-    
+
     if args.files:
         df = load_multiple_files(args.files)
     else:
         df = load_training_data(args.data_dir)
-    
+
     if df is None or len(df) == 0:
         print("Error: No data loaded!")
         print(f"Make sure CSV files are in {args.data_dir} or specify files with --files")
         return
-    
+
     print(f"Loaded {len(df)} samples")
-    
+
     #run selected analyses
     if args.mode == 'reward' or args.mode == 'all':
         run_reward_prediction(df, threshold=args.threshold)
-    
+
     if args.mode == 'algorithm' or args.mode == 'all':
         run_algorithm_prediction(df)
-    
+
     if args.mode == 'environment' or args.mode == 'all':
         run_environment_analysis(df)
-    
+
     if args.mode == 'convergence' or args.mode == 'all':
         run_convergence_analysis(df)
-    
+
     print("\n" + "="*50)
     print("DONE")
     print("="*50)
