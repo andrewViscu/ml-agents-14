@@ -2,18 +2,15 @@
 import subprocess
 import time
 from csv_table_creator import write_csv_row, get_csv_columns
-from general_data_metrics import calculate_general_data
 from resource_py_script import ResourceMonitor
 
-def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path):
+def run_training(config_file_path, run_id, csv_output_path):
     """
     Runs mlagents-learn command and processes output in real-time, writing metrics to CSV.
     
     Args:
         config_file_path (str): Path to the config file.
         run_id (str): Unique identifier for the training run.
-        chosen_game (str): Name of the game extracted from config file.
-        learning_algorithm (str): Learning algorithm extracted from config file path.
         csv_output_path (str): Path to the CSV file where data will be written.
     
     Returns:
@@ -84,8 +81,7 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
             if current_step is not None and current_step not in written_steps:
                 if current_mean_reward is not None or current_std_reward is not None or current_mean_group_reward is not None:
 
-                    # Calculate general, performance and resource usage data (called on each line with metrics)
-                    general_data = calculate_general_data(chosen_game, learning_algorithm, run_id, current_step)
+                    # Calculate performance and resource usage data (called on each line with metrics)
                     resource_usage_data = resource_monitor.calculate_resource_usage_data()
 
                     # Prepare row data - handle None values properly
@@ -99,9 +95,6 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
                         "mean_group_reward": current_mean_group_reward if current_mean_group_reward is not None else '',
                         "std_reward": current_std_reward if current_std_reward is not None else '',
                         "time_elapsed": current_time_elapsed if current_time_elapsed is not None else '',
-                        "run_id": general_data["run_id"],
-                        "environment": general_data["environment"],
-                        "algorithm": general_data["algorithm"],
                         "memory_usage_avg_mb": format_value(resource_usage_data.get("memory usage avg mb")),
                         "memory_usage_peak_mb": format_value(resource_usage_data.get("memory usage peak mb")),
                         "cpu_usage_avg_mb": format_value(resource_usage_data.get("cpu usage avg percent")),
