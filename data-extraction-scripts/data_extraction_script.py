@@ -73,6 +73,22 @@ def main():
     if len(args) > 0 and args[0] == "generate-data":
         args = args[1:]
     
+    env_path = None
+    cleaned_args = []
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg.startswith("--env="):
+            env_path = arg.split("=", 1)[1]
+        elif arg == "--env" and i + 1 < len(args):
+            env_path = args[i + 1]
+            i += 1
+        else:
+            cleaned_args.append(arg)
+        i += 1
+
+    args = cleaned_args
+    
     if len(args) < 2:
         print("Usage: generate-data <config_file_path> <run_id_name>")
         print("Example: generate-data config/ppo/3DBall.yaml my_run_001")
@@ -115,7 +131,7 @@ def main():
     
     # Run the training command and process output
     try:
-        exit_code = run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path)
+        exit_code = run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path, env_path)
         if exit_code != 0:
             sys.exit(exit_code)
     except FileNotFoundError:

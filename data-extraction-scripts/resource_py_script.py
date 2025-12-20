@@ -28,7 +28,7 @@ class ResourceMonitor(threading.Thread):
     def __init__(self, ml_pid: Optional[int], interval_s: float = 1.0):
         super().__init__(daemon=True)
         self._interval_s = max(0.2, float(interval_s))
-        self._stop = threading.Event()
+        self._stop_event = threading.Event()
         self._ml_proc = None
         self._ml_pid = ml_pid
         self._monitor_children = True  # Monitor child processes too
@@ -74,7 +74,7 @@ class ResourceMonitor(threading.Thread):
         self._rows: List[Dict[str, Optional[float]]] = []
 
     def run(self) -> None:
-        while not self._stop.is_set():
+        while not self._stop_event.is_set():
             t0 = time.time()
             self._sample_once()
             remaining = self._interval_s - (time.time() - t0)
@@ -88,7 +88,7 @@ class ResourceMonitor(threading.Thread):
                 pass
 
     def stop(self) -> None:
-        self._stop.set()
+        self._stop_event.set()
 
     def _get_process_tree_stats(self, proc):
         """Get CPU and memory stats for a process and all its children."""

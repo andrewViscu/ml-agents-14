@@ -5,7 +5,7 @@ from csv_table_creator import write_csv_row, get_csv_columns
 from general_data_metrics import calculate_general_data
 from resource_py_script import ResourceMonitor
 
-def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path):
+def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path, env_path):
     """
     Runs mlagents-learn command and processes output in real-time, writing metrics to CSV.
     
@@ -25,6 +25,10 @@ def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_
     """
     # Construct the command
     command = ["mlagents-learn", config_file_path, "--run-id", run_id]
+    if env_path:
+        command.append(f"--env={env_path}")
+
+    command += ["--run-id", run_id]
     
     print(f"\nRunning command: {' '.join(command)}\n")
     
