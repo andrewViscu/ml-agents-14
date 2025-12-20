@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import suppress_warnings
 import sys
 import os
 import re
@@ -123,8 +124,9 @@ def main():
     
     # Ensure training-data directory exists
     os.makedirs(training_data_dir, exist_ok=True)
-    
-    csv_output_path = os.path.join(training_data_dir, "training_data.csv")
+
+    csv_file_name = "training_data_" + run_id + ".csv"
+    csv_output_path = os.path.join(training_data_dir, csv_file_name)
     
     if not create_csv_table(csv_output_path):
         sys.exit(1)
