@@ -4,15 +4,13 @@ import time
 from csv_table_creator import write_csv_row, get_csv_columns
 from resource_py_script import ResourceMonitor
 
-def run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path, env_path):
+def run_training(config_file_path, run_id, csv_output_path):
     """
     Runs mlagents-learn command and processes output in real-time, writing metrics to CSV.
     
     Args:
         config_file_path (str): Path to the config file.
         run_id (str): Unique identifier for the training run.
-        chosen_game (str): Name of the game extracted from config file.
-        learning_algorithm (str): Learning algorithm extracted from config file path.
         csv_output_path (str): Path to the CSV file where data will be written.
     
     Returns:
