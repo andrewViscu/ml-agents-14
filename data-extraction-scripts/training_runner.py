@@ -22,6 +22,10 @@ def run_training(config_file_path, run_id, csv_output_path):
     """
     # Construct the command
     command = ["mlagents-learn", config_file_path, "--run-id", run_id]
+    if env_path:
+        command.append(f"--env={env_path}")
+
+    command += ["--run-id", run_id]
     
     print(f"\nRunning command: {' '.join(command)}\n")
     
