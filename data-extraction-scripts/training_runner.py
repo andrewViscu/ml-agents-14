@@ -4,7 +4,7 @@ import time
 from csv_table_creator import write_csv_row, get_csv_columns
 from resource_py_script import ResourceMonitor
 
-def run_training(config_file_path, run_id, csv_output_path):
+def run_training(config_file_path, run_id, csv_output_path, config_hyperparams=None):
     """
     Runs mlagents-learn command and processes output in real-time, writing metrics to CSV.
     
@@ -12,6 +12,7 @@ def run_training(config_file_path, run_id, csv_output_path):
         config_file_path (str): Path to the config file.
         run_id (str): Unique identifier for the training run.
         csv_output_path (str): Path to the CSV file where data will be written.
+        config_hyperparams (dict): Dictionary containing hyperparameters from config file.
     
     Returns:
         int: Exit code of the mlagents-learn command (0 for success, non-zero for failure).
@@ -20,6 +21,9 @@ def run_training(config_file_path, run_id, csv_output_path):
         FileNotFoundError: If mlagents-learn command is not found.
         KeyboardInterrupt: If the command is interrupted by user.
     """
+    # Default to empty dict if not provided
+    if config_hyperparams is None:
+        config_hyperparams = {}
     # Construct the command
     command = ["mlagents-learn", config_file_path, "--run-id", run_id]
     if env_path:
@@ -105,6 +109,23 @@ def run_training(config_file_path, run_id, csv_output_path):
                         "cpu_usage_peak_mb": format_value(resource_usage_data.get("cpu usage peak percent")),
                         "gpu_usage_avg_mb": format_value(resource_usage_data.get("gpu usage avg mb")),
                         "gpu_usage_peak_mb": format_value(resource_usage_data.get("gpu usage peak mb")),
+                        # Add config hyperparameters
+                        "trainer_type": config_hyperparams.get("trainer_type", ""),
+                        "batch_size": config_hyperparams.get("batch_size", ""),
+                        "buffer_size": config_hyperparams.get("buffer_size", ""),
+                        "learning_rate": config_hyperparams.get("learning_rate", ""),
+                        "beta": config_hyperparams.get("beta", ""),
+                        "epsilon": config_hyperparams.get("epsilon", ""),
+                        "lambd": config_hyperparams.get("lambd", ""),
+                        "num_epoch": config_hyperparams.get("num_epoch", ""),
+                        "learning_rate_schedule": config_hyperparams.get("learning_rate_schedule", ""),
+                        "gamma": config_hyperparams.get("gamma", ""),
+                        "time_horizon": config_hyperparams.get("time_horizon", ""),
+                        "hidden_units": config_hyperparams.get("hidden_units", ""),
+                        "num_layers": config_hyperparams.get("num_layers", ""),
+                        "tau": config_hyperparams.get("tau", ""),
+                        "init_entcoef": config_hyperparams.get("init_entcoef", ""),
+                        "steps_per_update": config_hyperparams.get("steps_per_update", ""),
                     }
                     
                     # Write to CSV

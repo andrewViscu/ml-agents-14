@@ -3,9 +3,105 @@ import suppress_warnings
 import sys
 import os
 import re
+import yaml
 from datetime import datetime
 from csv_table_creator import create_csv_table
 from training_runner import run_training
+
+
+def parse_config_file(config_file_path):
+    """
+    Parse a YAML config file and extract hyperparameters.
+    
+    Args:
+        config_file_path (str): Path to the YAML config file.
+    
+    Returns:
+        dict: Dictionary containing extracted hyperparameters.
+    """
+    try:
+        with open(config_file_path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        
+        # Initialize with default empty values
+        hyperparams = {
+            "trainer_type": "",
+            "batch_size": "",
+            "buffer_size": "",
+            "learning_rate": "",
+            "beta": "",
+            "epsilon": "",
+            "lambd": "",
+            "num_epoch": "",
+            "learning_rate_schedule": "",
+            "gamma": "",
+            "time_horizon": "",
+            "hidden_units": "",
+            "num_layers": "",
+            "tau": "",
+            "init_entcoef": "",
+            "steps_per_update": "",
+        }
+        
+        # Extract behavior config
+        if config and "behaviors" in config:
+            behavior_name = list(config["behaviors"].keys())[0]
+            behavior_config = config["behaviors"][behavior_name]
+            
+            # Extract trainer type
+            hyperparams["trainer_type"] = behavior_config.get("trainer_type", "")
+            
+            # Extract hyperparameters
+            if "hyperparameters" in behavior_config:
+                hp = behavior_config["hyperparameters"]
+                hyperparams["batch_size"] = hp.get("batch_size", "")
+                hyperparams["buffer_size"] = hp.get("buffer_size", "")
+                hyperparams["learning_rate"] = hp.get("learning_rate", "")
+                hyperparams["beta"] = hp.get("beta", "")
+                hyperparams["epsilon"] = hp.get("epsilon", "")
+                hyperparams["lambd"] = hp.get("lambd", "")
+                hyperparams["num_epoch"] = hp.get("num_epoch", "")
+                hyperparams["learning_rate_schedule"] = hp.get("learning_rate_schedule", "")
+                hyperparams["tau"] = hp.get("tau", "")
+                hyperparams["init_entcoef"] = hp.get("init_entcoef", "")
+                hyperparams["steps_per_update"] = hp.get("steps_per_update", "")
+            
+            # Extract network settings
+            if "network_settings" in behavior_config:
+                ns = behavior_config["network_settings"]
+                hyperparams["hidden_units"] = ns.get("hidden_units", "")
+                hyperparams["num_layers"] = ns.get("num_layers", "")
+            
+            # Extract reward signals (gamma)
+            if "reward_signals" in behavior_config and "extrinsic" in behavior_config["reward_signals"]:
+                hyperparams["gamma"] = behavior_config["reward_signals"]["extrinsic"].get("gamma", "")
+            
+            # Extract time_horizon
+            hyperparams["time_horizon"] = behavior_config.get("time_horizon", "")
+        
+        return hyperparams
+        
+    except Exception as e:
+        print(f"Warning: Could not parse config file '{config_file_path}': {e}")
+        # Return empty dict
+        return {
+            "trainer_type": "",
+            "batch_size": "",
+            "buffer_size": "",
+            "learning_rate": "",
+            "beta": "",
+            "epsilon": "",
+            "lambd": "",
+            "num_epoch": "",
+            "learning_rate_schedule": "",
+            "gamma": "",
+            "time_horizon": "",
+            "hidden_units": "",
+            "num_layers": "",
+            "tau": "",
+            "init_entcoef": "",
+            "steps_per_update": "",
+        }
 
 
 def parse_mlagents_output(line):
@@ -130,6 +226,9 @@ def main():
     
     if not create_csv_table(csv_output_path):
         sys.exit(1)
+    
+    # Parse config file to extract hyperparameters
+    config_hyperparams = parse_config_file(config_file_path)
     
     # Run the training command and process output
     try:
