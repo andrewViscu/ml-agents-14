@@ -1,4 +1,5 @@
 # ML-Agents Training Predictor
+
 ## Group 14 - BCS2720 Project 2.1
 
 Predicts ML agent performance and compares training algorithms (PPO, SAC, POCA) using data collected from Unity ML-Agents environments.
@@ -6,30 +7,37 @@ Predicts ML agent performance and compares training algorithms (PPO, SAC, POCA) 
 ## Usage
 
 ### Basic usage (run all analyses):
+
 ```bash
 python main.py --data_dir ./data
 ```
+
 ## What Each Mode Does
 
 ### reward
+
 Predicts if a training step will have good or bad reward based on resource metrics.
 Uses random forest with 5-fold cross validation.
 
 ### algorithm
+
 Predicts which algorithm (PPO/SAC/POCA) is being used.
 Framework for comparing algorithm performance.
 **Note: needs data from multiple algorithms to be useful**
 
 ### environment
+
 Analyzes performance across different environments (3DBall, SoccerTwos, etc).
 Recommends best algorithm for each environment.
 
 ### convergence
+
 Checks if training runs are converging based on reward trends.
 
 ## Data Format
 
 CSV files should have these columns:
+
 - `step` - training step number
 - `mean_reward` - individual agent reward
 - `mean_group_reward` - team/group reward
@@ -61,6 +69,7 @@ CSV files should have these columns:
 ## Current Results
 
 With soccer_twos POCA data only:
+
 - Reward prediction CV accuracy: ~69.7%
 - Algorithm prediction: needs more algorithms
 

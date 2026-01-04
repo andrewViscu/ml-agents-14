@@ -1,108 +1,10 @@
-#!/usr/bin/env python3
 import suppress_warnings
 import sys
 import os
 import re
-import yaml
-from datetime import datetime
 from csv_table_creator import create_csv_table
 from training_runner import run_training
-
-
-def parse_config_file(config_file_path):
-    """
-    Parse a YAML config file and extract hyperparameters.
-    
-    Args:
-        config_file_path (str): Path to the YAML config file.
-    
-    Returns:
-        dict: Dictionary containing extracted hyperparameters.
-    """
-    try:
-        with open(config_file_path, 'r', encoding='utf-8') as f:
-            config = yaml.safe_load(f)
-        
-        # Initialize with default empty values
-        hyperparams = {
-            "trainer_type": "",
-            "batch_size": "",
-            "buffer_size": "",
-            "learning_rate": "",
-            "beta": "",
-            "epsilon": "",
-            "lambd": "",
-            "num_epoch": "",
-            "learning_rate_schedule": "",
-            "gamma": "",
-            "time_horizon": "",
-            "hidden_units": "",
-            "num_layers": "",
-            "tau": "",
-            "init_entcoef": "",
-            "steps_per_update": "",
-        }
-        
-        # Extract behavior config
-        if config and "behaviors" in config:
-            behavior_name = list(config["behaviors"].keys())[0]
-            behavior_config = config["behaviors"][behavior_name]
-            
-            # Extract trainer type
-            hyperparams["trainer_type"] = behavior_config.get("trainer_type", "")
-            
-            # Extract hyperparameters
-            if "hyperparameters" in behavior_config:
-                hp = behavior_config["hyperparameters"]
-                hyperparams["batch_size"] = hp.get("batch_size", "")
-                hyperparams["buffer_size"] = hp.get("buffer_size", "")
-                hyperparams["learning_rate"] = hp.get("learning_rate", "")
-                hyperparams["beta"] = hp.get("beta", "")
-                hyperparams["epsilon"] = hp.get("epsilon", "")
-                hyperparams["lambd"] = hp.get("lambd", "")
-                hyperparams["num_epoch"] = hp.get("num_epoch", "")
-                hyperparams["learning_rate_schedule"] = hp.get("learning_rate_schedule", "")
-                hyperparams["tau"] = hp.get("tau", "")
-                hyperparams["init_entcoef"] = hp.get("init_entcoef", "")
-                hyperparams["steps_per_update"] = hp.get("steps_per_update", "")
-            
-            # Extract network settings
-            if "network_settings" in behavior_config:
-                ns = behavior_config["network_settings"]
-                hyperparams["hidden_units"] = ns.get("hidden_units", "")
-                hyperparams["num_layers"] = ns.get("num_layers", "")
-            
-            # Extract reward signals (gamma)
-            if "reward_signals" in behavior_config and "extrinsic" in behavior_config["reward_signals"]:
-                hyperparams["gamma"] = behavior_config["reward_signals"]["extrinsic"].get("gamma", "")
-            
-            # Extract time_horizon
-            hyperparams["time_horizon"] = behavior_config.get("time_horizon", "")
-        
-        return hyperparams
-        
-    except Exception as e:
-        print(f"Warning: Could not parse config file '{config_file_path}': {e}")
-        # Return empty dict
-        return {
-            "trainer_type": "",
-            "batch_size": "",
-            "buffer_size": "",
-            "learning_rate": "",
-            "beta": "",
-            "epsilon": "",
-            "lambd": "",
-            "num_epoch": "",
-            "learning_rate_schedule": "",
-            "gamma": "",
-            "time_horizon": "",
-            "hidden_units": "",
-            "num_layers": "",
-            "tau": "",
-            "init_entcoef": "",
-            "steps_per_update": "",
-        }
-
+from tensorboard_metrics import TensorBoardMetrics
 
 def parse_mlagents_output(line):
     """
@@ -126,17 +28,17 @@ def parse_mlagents_output(line):
         "time_elapsed": None,
     }
     
-    # Extract step: "Step: 1000" or similar
+    # Extract step
     step_match = re.search(r'Step:\s*(\d+)', line, re.IGNORECASE)
     if step_match:
         metrics["step"] = int(step_match.group(1))
     
-    # Extract mean reward: "Mean Reward: 1.234" or similar
+    # Extract mean reward
     mean_reward_match = re.search(r'Mean Reward:\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
     if mean_reward_match:
         metrics["mean_reward"] = float(mean_reward_match.group(1))
     
-    # Extract std reward: "Std of Reward: 0.123" or "Std of Reward: 0.123" or similar
+    # Extract std reward
     std_reward_match = re.search(r'Std\s+of\s+Reward:\s*([+-]?\d*\.?\d+)', line, re.IGNORECASE)
     if std_reward_match:
         metrics["std_reward"] = float(std_reward_match.group(1))
@@ -153,7 +55,6 @@ def parse_mlagents_output(line):
     return metrics
 
 
-# ----------- Main Function -----------
 def main():
     """
     Main function to get user input, run mlagents-learn command, extract data and calculate statistics, store data in CSV table.
@@ -165,34 +66,15 @@ def main():
     # Parse command-line arguments
     # Handle both "python script.py generate-data <config> <run_id>" and "python script.py <config> <run_id>"
     args = sys.argv[1:]
-    
-    # If first arg is "generate-data", skip it
-    if len(args) > 0 and args[0] == "generate-data":
-        args = args[1:]
-    
-    env_path = None
-    cleaned_args = []
-    i = 0
-    while i < len(args):
-        arg = args[i]
-        if arg.startswith("--env="):
-            env_path = arg.split("=", 1)[1]
-        elif arg == "--env" and i + 1 < len(args):
-            env_path = args[i + 1]
-            i += 1
-        else:
-            cleaned_args.append(arg)
-        i += 1
 
-    args = cleaned_args
-    
-    if len(args) < 2:
-        print("Usage: generate-data <config_file_path> <run_id_name>")
-        print("Example: generate-data config/ppo/3DBall.yaml my_run_001")
+    if len(args) != 3:
+        print("Usage: python data_extraction_script.py <config_file_path> <env_path> <run_id_name>")
+        print("Example: python ./data-extraction-scripts/data_extraction_script.py config/custom/SoccerTwosCustomConfigRun1.yaml training-envs/SoccerTwos_mac_env SCTWRUN1")
         sys.exit(1)
-    
+
     config_file_path = args[0]
-    run_id = args[1]
+    env_path = args[1]
+    run_id = args[2]
     
     # Validate that the config file exists
     if not os.path.exists(config_file_path):
@@ -205,7 +87,7 @@ def main():
     
     # Extract game name from config file path
     config_filename = os.path.basename(config_file_path)
-    chosen_game = os.path.splitext(config_filename)[0]
+    choosen_game = os.path.splitext(config_filename)[0]
     
     # Extract learning algorithm from config file path (second part of path)
     # Example: config/ppo/3DBall.yaml -> learning_algorithm = "ppo"
@@ -227,12 +109,9 @@ def main():
     if not create_csv_table(csv_output_path):
         sys.exit(1)
     
-    # Parse config file to extract hyperparameters
-    config_hyperparams = parse_config_file(config_file_path)
-    
     # Run the training command and process output
     try:
-        exit_code = run_training(config_file_path, run_id, chosen_game, learning_algorithm, csv_output_path, env_path)
+        exit_code = run_training(config_file_path, run_id, env_path, csv_output_path,)
         if exit_code != 0:
             sys.exit(exit_code)
     except FileNotFoundError:
@@ -242,6 +121,17 @@ def main():
     except Exception as e:
         print(f"\nError: {e}")
         sys.exit(1)
+    
+    tb_results_root = os.path.join(project_root, "results")
+    print(tb_results_root)
+    tb_run_dir = os.path.join(tb_results_root, run_id, choosen_game)
+    print(tb_run_dir)
+
+    if os.path.exists(tb_run_dir):
+        tb_metrics = TensorBoardMetrics(events_path=tb_run_dir, train_csv_path=csv_output_path)
+        tb_metrics.append_metrics()
+    else:
+        print(f"Warning: Failed to access TensorBoard metrics")
 
 
 if __name__ == "__main__":
