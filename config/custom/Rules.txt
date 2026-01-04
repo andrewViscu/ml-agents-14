@@ -1,3 +1,5 @@
+Every config file must be named following the environment ! e.g Hallway.yaml
+Add a "#" line at top of each config file to precise the runs performed using that config file
 
 ----------------PPO & POCA CONFIG----------------
 "batch_size": [32,256] # should always be multiple times smaller than the buffer buffer_size
