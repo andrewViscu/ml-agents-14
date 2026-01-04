@@ -6,6 +6,7 @@ It is for collectiong data:
 - gpu usage avg mb / peak mb   (NVIDIA only via NVML; empty on Macs without NVML)
 
 """
+
 from __future__ import annotations
 
 import threading
@@ -32,7 +33,9 @@ class ResourceMonitor(threading.Thread):
         self._ml_proc = None
         self._ml_pid = ml_pid
         self._monitor_children = True  # Monitor child processes too
-        self._initialized_procs = set()  # Track which processes we've initialized for CPU
+        self._initialized_procs = (
+            set()
+        )  # Track which processes we've initialized for CPU
         self._nvml_initialized = False
         if psutil and ml_pid:
             try:
@@ -41,7 +44,11 @@ class ResourceMonitor(threading.Thread):
                 _ = self._ml_proc.cpu_percent(interval=None)
                 self._initialized_procs.add(ml_pid)
                 print(f"ResourceMonitor: Monitoring process {ml_pid} and its children")
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
+            except (
+                psutil.NoSuchProcess,
+                psutil.AccessDenied,
+                psutil.ZombieProcess,
+            ) as e:
                 print(f"Warning: Could not attach to process {ml_pid}: {e}")
                 self._ml_proc = None
             except Exception as e:
@@ -49,7 +56,9 @@ class ResourceMonitor(threading.Thread):
                 self._ml_proc = None
         else:
             if not psutil:
-                print("Warning: psutil not available, CPU and memory monitoring disabled")
+                print(
+                    "Warning: psutil not available, CPU and memory monitoring disabled"
+                )
             if not ml_pid:
                 print("Warning: No process ID provided, resource monitoring disabled")
         if pynvml:
@@ -80,7 +89,7 @@ class ResourceMonitor(threading.Thread):
             remaining = self._interval_s - (time.time() - t0)
             if remaining > 0:
                 time.sleep(remaining)
-        
+
         if pynvml and self._nvml_initialized:
             try:
                 pynvml.nvmlShutdown()
@@ -94,7 +103,7 @@ class ResourceMonitor(threading.Thread):
         """Get CPU and memory stats for a process and all its children."""
         cpu_total = 0.0
         mem_total = 0.0
-        
+
         try:
             # Initialize parent process if not already initialized
             proc_pid = proc.pid
@@ -106,7 +115,7 @@ class ResourceMonitor(threading.Thread):
                     parent_newly_init = True
                 except Exception:
                     pass
-            
+
             # Get parent process stats
             # For newly initialized processes, use a blocking call to get immediate reading
             # For already initialized processes, use non-blocking call
@@ -125,13 +134,17 @@ class ResourceMonitor(threading.Thread):
                 except Exception:
                     pass
             mem_total += float(proc.memory_info().rss) / (1024 * 1024)
-            
+
             # Get all child processes
             if self._monitor_children:
                 try:
                     children = proc.children(recursive=True)
-                    if children and self._cpu_count == 0:  # Debug: print once on first sample
-                        print(f"ResourceMonitor: Found {len(children)} child process(es) to monitor")
+                    if (
+                        children and self._cpu_count == 0
+                    ):  # Debug: print once on first sample
+                        print(
+                            f"ResourceMonitor: Found {len(children)} child process(es) to monitor"
+                        )
                     for child in children:
                         try:
                             if child.is_running():
@@ -149,19 +162,29 @@ class ResourceMonitor(threading.Thread):
                                 if child_newly_init:
                                     # blocking call for newly initialized child
                                     try:
-                                        child_cpu_val = float(child.cpu_percent(interval=0.1))
+                                        child_cpu_val = float(
+                                            child.cpu_percent(interval=0.1)
+                                        )
                                         cpu_total += child_cpu_val
                                     except Exception:
                                         pass
                                 else:
                                     # non-blocking call for already initialized child
                                     try:
-                                        child_cpu_val = float(child.cpu_percent(interval=None))
+                                        child_cpu_val = float(
+                                            child.cpu_percent(interval=None)
+                                        )
                                         cpu_total += child_cpu_val
                                     except Exception:
                                         pass
-                                mem_total += float(child.memory_info().rss) / (1024 * 1024)
-                        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                                mem_total += float(child.memory_info().rss) / (
+                                    1024 * 1024
+                                )
+                        except (
+                            psutil.NoSuchProcess,
+                            psutil.AccessDenied,
+                            psutil.ZombieProcess,
+                        ):
                             # Child process may have terminated, skip it
                             continue
                         except Exception:
@@ -174,7 +197,7 @@ class ResourceMonitor(threading.Thread):
             return None, None
         except Exception:
             return None, None
-        
+
         return cpu_total, mem_total
 
     def _sample_once(self) -> None:
@@ -218,7 +241,7 @@ class ResourceMonitor(threading.Thread):
                 if self._gpu_mem_count == 0:  # Only print once
                     print(f"Warning: Unexpected error during GPU monitoring: {e}")
                 gpu_mem_used = None
-        
+
         if isinstance(cpu, (int, float)):
             self._cpu_total += float(cpu)
             self._cpu_count += 1
@@ -238,14 +261,23 @@ class ResourceMonitor(threading.Thread):
             if gpu_mem_used > self._gpu_mem_peak:
                 self._gpu_mem_peak = float(gpu_mem_used)
 
-        
         row = {
-            "memory usage avg mb": (self._mem_total / self._mem_count) if self._mem_count > 0 else None,
+            "memory usage avg mb": (
+                (self._mem_total / self._mem_count) if self._mem_count > 0 else None
+            ),
             "memory usage peak mb": self._mem_peak if self._mem_count > 0 else None,
-            "cpu usage avg percent": (self._cpu_total / self._cpu_count) if self._cpu_count > 0 else None,
+            "cpu usage avg percent": (
+                (self._cpu_total / self._cpu_count) if self._cpu_count > 0 else None
+            ),
             "cpu usage peak percent": self._cpu_peak if self._cpu_count > 0 else None,
-            "gpu usage avg mb": (self._gpu_mem_total / self._gpu_mem_count) if self._gpu_mem_count > 0 else None,
-            "gpu usage peak mb": self._gpu_mem_peak if self._gpu_mem_count > 0 else None,
+            "gpu usage avg mb": (
+                (self._gpu_mem_total / self._gpu_mem_count)
+                if self._gpu_mem_count > 0
+                else None
+            ),
+            "gpu usage peak mb": (
+                self._gpu_mem_peak if self._gpu_mem_count > 0 else None
+            ),
         }
         self._rows.append(row)
 
@@ -260,7 +292,11 @@ class ResourceMonitor(threading.Thread):
         mem_peak = self._mem_peak if self._mem_count > 0 else None
         cpu_avg = (self._cpu_total / self._cpu_count) if self._cpu_count > 0 else None
         cpu_peak = self._cpu_peak if self._cpu_count > 0 else None
-        gpu_avg = (self._gpu_mem_total / self._gpu_mem_count) if self._gpu_mem_count > 0 else None
+        gpu_avg = (
+            (self._gpu_mem_total / self._gpu_mem_count)
+            if self._gpu_mem_count > 0
+            else None
+        )
         gpu_peak = self._gpu_mem_peak if self._gpu_mem_count > 0 else None
         return {
             "memory usage avg mb": mem_avg,
