@@ -64,7 +64,7 @@ def parse_mlagents_output(line):
 
 def main():
     """
-    Main function to get user input, run mlagents-learn command, 
+    Main function to get user input, run mlagents-learn command,
     extract data and calculate statistics, store data in CSV table.
     Usage:
         generate-data <config_file_path> <run_id_name>
