@@ -81,7 +81,7 @@ def main():
             " <config_file_path> <env_path> <run_id_name>"
         )
         print(
-            "Example: python ./data-extraction-scripts/data_extraction_script.py " \
+            "Example: python ./data-extraction-scripts/data_extraction_script.py "
             "config/custom/SoccerTwosCustomConfigRun1.yaml training-envs/SoccerTwos_mac_env SCTWRUN1"
         )
         sys.exit(1)
@@ -102,11 +102,6 @@ def main():
     # Extract game name from config file path
     config_filename = os.path.basename(config_file_path)
     choosen_game = os.path.splitext(config_filename)[0]
-
-    # Extract learning algorithm from config file path (second part of path)
-    # Example: config/ppo/3DBall.yaml -> learning_algorithm = "ppo"
-    path_parts = os.path.normpath(config_file_path).split(os.sep)
-    learning_algorithm = path_parts[1] if len(path_parts) > 1 else None
 
     # Create CSV table in training-data folder
     # Get the project root directory (one level up from data-extraction-scripts)
@@ -142,9 +137,7 @@ def main():
         sys.exit(1)
 
     tb_results_root = os.path.join(project_root, "results")
-    print(tb_results_root)
     tb_run_dir = os.path.join(tb_results_root, run_id, choosen_game)
-    print(tb_run_dir)
 
     if os.path.exists(tb_run_dir):
         tb_metrics = TensorBoardMetrics(
@@ -152,7 +145,7 @@ def main():
         )
         tb_metrics.append_metrics()
     else:
-        print(f"Warning: Failed to access TensorBoard metrics")
+        print(f"Warning: Failed to access TensorBoard metrics, {tb_run_dir}")
 
 
 if __name__ == "__main__":
