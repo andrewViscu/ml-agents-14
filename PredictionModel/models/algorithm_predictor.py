@@ -1,4 +1,5 @@
-# Algorithm predictor predicts which algorithm (PPO, SAC, POCA) will perform best
+# Algorithm predictor predicts which algorithm (PPO, SAC, POCA)
+# will perform best
 # This is the main framework for comparing algorithm performance
 
 import numpy as np
@@ -170,6 +171,7 @@ class EnvironmentAlgorithmPredictor:
         self.environment_stats = {}
 
     def compute_algorithm_scores(self, df):
+        # TODO: environment is not a column header anymore, harcode it
         # computes performance scores for each algorithm in each environment
         # this builds the training data for environment-level predictions
 
@@ -193,7 +195,7 @@ class EnvironmentAlgorithmPredictor:
                         if len(algo_data) > 0 else 0
                     ),
                     'avg_memory': algo_data['memory_usage_avg_mb'].mean(),
-                    'avg_cpu': algo_data['cpu_usage_avg_mb'].mean(),
+                    'avg_cpu': algo_data['cpu_usage_avg_percent'].mean(),
                     'total_steps': algo_data['step'].max(),
                     'n_samples': len(algo_data)
                 }
@@ -202,6 +204,7 @@ class EnvironmentAlgorithmPredictor:
         return pd.DataFrame(results)
 
     def find_best_algorithm(self, scores_df):
+        # TODO: same as up
         # for each environment, finds the best performing algorithm
         # uses final_reward as the main metric (can be changed)
 
@@ -271,7 +274,7 @@ def compare_algorithms(df):
         print(f"Reward std: {algo_data['mean_group_reward'].std():.4f}")
         print(f"Avg memory (MB):"
               f"{algo_data['memory_usage_avg_mb'].mean():.1f}")
-        print(f"Avg CPU (%): {algo_data['cpu_usage_avg_mb'].mean():.1f}")
+        print(f"Avg CPU (%): {algo_data['cpu_usage_avg_percent'].mean():.1f}")
         print()
 
 

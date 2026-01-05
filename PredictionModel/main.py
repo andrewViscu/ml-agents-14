@@ -3,7 +3,7 @@
 #
 # usage:
 #   python main.py                     - runs with default data directory
-#   python main.py --data_dir ./data   - specify data directory
+#   python main.py --data_dir <data_path>  - specify data directory
 #   python main.py --mode reward       - predict reward performance
 #   python main.py --mode algorithm    - predict best algorithm
 

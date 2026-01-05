@@ -96,9 +96,9 @@ def create_algorithm_labels(df):
     # maps algorithm names to integers
 
     algorithm_map = {
-        'ppo': 0,
-        'sac': 1,
-        'poca': 2
+        'ppo': 0, 'PPO': 0,
+        'sac': 1, 'SAC': 1,
+        'poca': 2, 'POCA': 2
     }
 
     # handle case sensitivity
