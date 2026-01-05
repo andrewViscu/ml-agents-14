@@ -2,8 +2,8 @@
 Resource metrics collector for ML-Agents training runs.
 It is for collectiong data:
 - memory usage avg mb / peak mb
-- cpu usage avg percent / peak percent   (trainer process CPU %, can exceed 100 on multi-core)
-- gpu usage avg mb / peak mb   (NVIDIA only via NVML; empty on Macs without NVML)
+- cpu usage avg percent / peak percent (can exceed 100 on multi-core)
+- gpu usage avg mb / peak mb (NVIDIA only via NVML; empty on Macs without NVML)
 
 """
 
@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import threading
 import time
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 try:
     import psutil  # type: ignore
@@ -43,7 +43,7 @@ class ResourceMonitor(threading.Thread):
                 # Initialize CPU percent calculation (first call returns 0.0)
                 _ = self._ml_proc.cpu_percent(interval=None)
                 self._initialized_procs.add(ml_pid)
-                print(f"ResourceMonitor: Monitoring process {ml_pid} and its children")
+                print(f"ResourceMonitor: Monitoring process {ml_pid}")
             except (
                 psutil.NoSuchProcess,
                 psutil.AccessDenied,
@@ -52,22 +52,23 @@ class ResourceMonitor(threading.Thread):
                 print(f"Warning: Could not attach to process {ml_pid}: {e}")
                 self._ml_proc = None
             except Exception as e:
-                print(f"Warning: Unexpected error attaching to process {ml_pid}: {e}")
+                print(f"Warning: Error related to process {ml_pid}:{e}")
                 self._ml_proc = None
         else:
             if not psutil:
                 print(
-                    "Warning: psutil not available, CPU and memory monitoring disabled"
+                    "Warning: psutil unavailable,"
+                    " CPU and memory monitoring disabled"
                 )
             if not ml_pid:
-                print("Warning: No process ID provided, resource monitoring disabled")
+                print("Warning: No process ID, resource monitoring disabled")
         if pynvml:
             try:
                 pynvml.nvmlInit()
                 self._nvml_initialized = True
-                print("ResourceMonitor: GPU monitoring initialized successfully")
+                print("ResourceMonitor: GPU monitoring initialized")
             except Exception as e:
-                print(f"Warning: Could not initialize NVML (GPU monitoring): {e}")
+                print(f"Warning: Could not initialize GPU monitoring: {e}")
                 self._nvml_initialized = False
         else:
             print("Warning: pynvml not available, GPU monitoring disabled")
@@ -117,10 +118,12 @@ class ResourceMonitor(threading.Thread):
                     pass
 
             # Get parent process stats
-            # For newly initialized processes, use a blocking call to get immediate reading
+            # For newly initialized processes,
+            # use a blocking call to get immediate reading
             # For already initialized processes, use non-blocking call
             if parent_newly_init:
-                # Use blocking call to get immediate CPU reading (blocks for 0.1s)
+                # Use blocking call to get immediate CPU reading
+                # (blocks for 0.1s)
                 try:
                     cpu_val = float(proc.cpu_percent(interval=0.1))
                     cpu_total += cpu_val
@@ -143,14 +146,16 @@ class ResourceMonitor(threading.Thread):
                         children and self._cpu_count == 0
                     ):  # Debug: print once on first sample
                         print(
-                            f"ResourceMonitor: Found {len(children)} child process(es) to monitor"
+                            f"ResourceMonitor: Found {len(children)}"
+                            "child process(es) to monitor"
                         )
                     for child in children:
                         try:
                             if child.is_running():
                                 child_pid = child.pid
                                 child_newly_init = False
-                                # Initialize child process if not already initialized
+                                # Initialize child process
+                                # if not already initialized
                                 if child_pid not in self._initialized_procs:
                                     try:
                                         _ = child.cpu_percent(interval=None)
@@ -169,7 +174,8 @@ class ResourceMonitor(threading.Thread):
                                     except Exception:
                                         pass
                                 else:
-                                    # non-blocking call for already initialized child
+                                    # non-blocking call for 
+                                    # already initialized child
                                     try:
                                         child_cpu_val = float(
                                             child.cpu_percent(interval=None)
@@ -193,7 +199,8 @@ class ResourceMonitor(threading.Thread):
                 except (psutil.NoSuchProcess, psutil.AccessDenied):
                     # Can't get children
                     pass
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+        except (psutil.NoSuchProcess, psutil.AccessDenied,
+                psutil.ZombieProcess):
             return None, None
         except Exception:
             return None, None
@@ -211,13 +218,10 @@ class ResourceMonitor(threading.Thread):
                 else:
                     # Get stats for process and all children
                     cpu, mem = self._get_process_tree_stats(self._ml_proc)
-            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            except (psutil.NoSuchProcess, psutil.AccessDenied,
+                    psutil.ZombieProcess):
                 # Process no longer exists or we lost access
                 self._ml_proc = None
-                cpu = None
-                mem = None
-            except Exception as e:
-                # Other errors - log but continue
                 cpu = None
                 mem = None
         gpu_mem_used = None
@@ -239,7 +243,8 @@ class ResourceMonitor(threading.Thread):
             except Exception as e:
                 # Other errors
                 if self._gpu_mem_count == 0:  # Only print once
-                    print(f"Warning: Unexpected error during GPU monitoring: {e}")
+                    print(f"Warning: Unexpected error during "
+                          "GPU monitoring: {e}")
                 gpu_mem_used = None
 
         if isinstance(cpu, (int, float)):
@@ -249,7 +254,8 @@ class ResourceMonitor(threading.Thread):
                 self._cpu_peak = float(cpu)
             # Debug: print first few CPU readings to verify it's working
             if self._cpu_count <= 3:
-                print(f"ResourceMonitor: CPU sample {self._cpu_count}: {cpu:.2f}%")
+                print(f"ResourceMonitor: CPU sample {self._cpu_count}:"
+                      " {cpu:.2f}%")
         if isinstance(mem, (int, float)):
             self._mem_total += float(mem)
             self._mem_count += 1
@@ -263,13 +269,17 @@ class ResourceMonitor(threading.Thread):
 
         row = {
             "memory usage avg mb": (
-                (self._mem_total / self._mem_count) if self._mem_count > 0 else None
+                (self._mem_total / self._mem_count)
+                if self._mem_count > 0 else None
             ),
-            "memory usage peak mb": self._mem_peak if self._mem_count > 0 else None,
+            "memory usage peak mb": self._mem_peak
+            if self._mem_count > 0 else None,
             "cpu usage avg percent": (
-                (self._cpu_total / self._cpu_count) if self._cpu_count > 0 else None
+                (self._cpu_total / self._cpu_count)
+                if self._cpu_count > 0 else None
             ),
-            "cpu usage peak percent": self._cpu_peak if self._cpu_count > 0 else None,
+            "cpu usage peak percent": self._cpu_peak
+            if self._cpu_count > 0 else None,
             "gpu usage avg mb": (
                 (self._gpu_mem_total / self._gpu_mem_count)
                 if self._gpu_mem_count > 0
@@ -286,7 +296,8 @@ class ResourceMonitor(threading.Thread):
 
     def calculate_resource_usage_data(self) -> Dict[str, Optional[float]]:
         """
-        Return the latest aggregated metrics without modifying internal buffers.
+        Return the latest aggregated metrics
+        without modifying internal buffers.
         """
         mem_avg = (self._mem_total / self._mem_count) if self._mem_count > 0 else None
         mem_peak = self._mem_peak if self._mem_count > 0 else None

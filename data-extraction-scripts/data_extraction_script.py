@@ -5,7 +5,6 @@ from csv_table_creator import create_csv_table
 from training_runner import run_training
 from tensorboard_metrics import TensorBoardMetrics
 
-
 def parse_mlagents_output(line):
     """
     Parse a line from mlagents-learn output to extract training metrics.
