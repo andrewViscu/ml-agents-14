@@ -66,8 +66,8 @@ def extract_features(df, feature_cols=None):
             'step',
             'memory_usage_avg_mb',
             'memory_usage_peak_mb',
-            'cpu_usage_avg_mb',
-            'cpu_usage_peak_mb',
+            'cpu_usage_avg_percent',
+            'cpu_usage_peak_percent',
             'gpu_usage_avg_mb',
             'gpu_usage_peak_mb'
         ]
@@ -132,7 +132,7 @@ def compute_run_statistics(df):
     stats = df.groupby('run_id').agg({
         'mean_group_reward': ['mean', 'std', 'max', 'min'],
         'memory_usage_avg_mb': ['mean', 'max'],
-        'cpu_usage_avg_mb': ['mean', 'max'],
+        'cpu_usage_avg_percent': ['mean', 'max'],
         'step': 'max'
     })
 

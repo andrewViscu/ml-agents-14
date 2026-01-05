@@ -193,7 +193,7 @@ class EnvironmentAlgorithmPredictor:
                         if len(algo_data) > 0 else 0
                     ),
                     'avg_memory': algo_data['memory_usage_avg_mb'].mean(),
-                    'avg_cpu': algo_data['cpu_usage_avg_mb'].mean(),
+                    'avg_cpu': algo_data['cpu_usage_avg_percent'].mean(),
                     'total_steps': algo_data['step'].max(),
                     'n_samples': len(algo_data)
                 }
@@ -271,7 +271,7 @@ def compare_algorithms(df):
         print(f"Reward std: {algo_data['mean_group_reward'].std():.4f}")
         print(f"Avg memory (MB):"
               f"{algo_data['memory_usage_avg_mb'].mean():.1f}")
-        print(f"Avg CPU (%): {algo_data['cpu_usage_avg_mb'].mean():.1f}")
+        print(f"Avg CPU (%): {algo_data['cpu_usage_avg_percent'].mean():.1f}")
         print()
 
 
