@@ -79,7 +79,7 @@ def run_algorithm_prediction(df):
     compare_algorithms(df)
 
     # check what algorithms we have
-    algorithms = df['trainer_type'].unique()
+    algorithms = df['algorithm'].unique()
     print(f"Algorithms in data: {list(algorithms)}")
 
     if len(algorithms) < 2:
@@ -152,7 +152,7 @@ def run_convergence_analysis(df):
     print("CONVERGENCE ANALYSIS")
     print("="*50)
     
-    for algo in df['trainer_type'].unique():
+    for algo in df['algorithm'].unique():
         result, message = predict_convergence(df, algo)
         print(f"\n{algo.upper()}: {message}")
 
@@ -161,7 +161,7 @@ def main():
     parser = argparse.ArgumentParser(description='ML-Agents Training Data Predictor')
     parser.add_argument('--data_dir', type=str, default='./data', help='Directory containing training CSV files')
     parser.add_argument('--files', type=str, nargs='+', help='Specific files to load')
-    parser.add_argument('--mode', type=str, default='all', choices=['reward', 'trainer_type', 'environment', 'convergence', 'all'],
+    parser.add_argument('--mode', type=str, default='all', choices=['reward', 'algorithm', 'environment', 'convergence', 'all'],
                         help='Which analysis to run')
     parser.add_argument('--threshold', type=float, default=0.05, help='Reward threshold for classification')
     
@@ -186,7 +186,7 @@ def main():
     if args.mode == 'reward' or args.mode == 'all':
         run_reward_prediction(df, threshold=args.threshold)
     
-    if args.mode == 'trainer_type' or args.mode == 'all':
+    if args.mode == 'algorithm' or args.mode == 'all':
         run_algorithm_prediction(df)
     
     if args.mode == 'environment' or args.mode == 'all':
