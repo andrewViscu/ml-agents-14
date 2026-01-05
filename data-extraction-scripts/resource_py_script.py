@@ -243,8 +243,9 @@ class ResourceMonitor(threading.Thread):
             except Exception as e:
                 # Other errors
                 if self._gpu_mem_count == 0:  # Only print once
-                    print(f"Warning: Unexpected error during "
-                          "GPU monitoring: {e}")
+                    print(
+                        f"Warning: Unexpected error during GPU monitoring: {e}"
+                        )
                 gpu_mem_used = None
 
         if isinstance(cpu, (int, float)):
@@ -299,9 +300,13 @@ class ResourceMonitor(threading.Thread):
         Return the latest aggregated metrics
         without modifying internal buffers.
         """
-        mem_avg = (self._mem_total / self._mem_count) if self._mem_count > 0 else None
+        mem_avg = (
+            self._mem_total / self._mem_count
+            if self._mem_count > 0 else None)
         mem_peak = self._mem_peak if self._mem_count > 0 else None
-        cpu_avg = (self._cpu_total / self._cpu_count) if self._cpu_count > 0 else None
+        cpu_avg = (
+            self._cpu_total / self._cpu_count
+            if self._cpu_count > 0 else None)
         cpu_peak = self._cpu_peak if self._cpu_count > 0 else None
         gpu_avg = (
             (self._gpu_mem_total / self._gpu_mem_count)

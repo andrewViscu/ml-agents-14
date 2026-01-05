@@ -5,6 +5,7 @@ from csv_table_creator import create_csv_table
 from training_runner import run_training
 from tensorboard_metrics import TensorBoardMetrics
 
+
 def parse_mlagents_output(line):
     """
     Parse a line from mlagents-learn output to extract training metrics.
@@ -80,8 +81,9 @@ def main():
             " <config_file_path> <env_path> <run_id_name>"
         )
         print(
-            "Example: python ./data-extraction-scripts/data_extraction_script.py "
-            "config/custom/SoccerTwosCustomConfigRun1.yaml training-envs/SoccerTwos_mac_env SCTWRUN1"
+            "Ex: python ./data-extraction-scripts/data_extraction_script.py "
+            "config/custom/SoccerTwosCustomConfigRun1.yaml "
+            "training-envs/SoccerTwos_mac_env SCTWRUN1"
         )
         sys.exit(1)
 
@@ -103,7 +105,7 @@ def main():
     choosen_game = os.path.splitext(config_filename)[0]
 
     # Create CSV table in training-data folder
-    # Get the project root directory (one level up from data-extraction-scripts)
+    # Get the project root directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir)
     training_data_dir = os.path.join(project_root, "training-data")
