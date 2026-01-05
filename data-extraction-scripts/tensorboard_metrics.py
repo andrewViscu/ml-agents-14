@@ -18,7 +18,8 @@ class TensorBoardMetrics:
         if self.events_path.is_dir():
             event_files = sorted(self.events_path.glob("events.*"))
             if not event_files:
-                raise FileNotFoundError(f"No event files found in {self.events_path}")
+                raise FileNotFoundError(
+                    f"No event files found in {self.events_path}")
             self.event_file = event_files[-1]
         else:
             self.event_file = self.events_path
@@ -51,7 +52,8 @@ class TensorBoardMetrics:
         value_loss_tag: str = "Losses/Value Loss",
     ) -> pd.DataFrame:
         """
-        Read entropy, policy and value loss from events and merge it to the training DataFrame on step
+        Read entropy, policy and value loss from events and
+        merge it to the training DataFrame on step
 
         """
 

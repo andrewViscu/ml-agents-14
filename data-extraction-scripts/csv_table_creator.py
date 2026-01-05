@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import csv
 import os
-from datetime import datetime
 
 
 def get_csv_columns():
@@ -19,10 +18,19 @@ def get_csv_columns():
         "time_elapsed",
         "memory_usage_avg_mb",
         "memory_usage_peak_mb",
-        "cpu_usage_avg_mb",
-        "cpu_usage_peak_mb",
+        "cpu_usage_avg_percent",
+        "cpu_usage_peak_percent",
         "gpu_usage_avg_mb",
         "gpu_usage_peak_mb",
+        "trainer_type",
+        "batch_size",
+        "buffer_size",
+        "learning_rate",
+        "beta",
+        "epsilon",
+        "lambd",
+        "num_epoch",
+        "learning_rate_schedule",
     ]
 
 
@@ -31,7 +39,8 @@ def create_csv_table(output_path="training_data.csv"):
     Create a CSV table with predefined columns.
 
     Args:
-        output_path (str): Path where the CSV file will be created. Defaults to "training_data.csv".
+        output_path (str): Path where the CSV file will be created. Defaults to
+        "training_data.csv".
 
     Returns:
         bool: True if CSV was created successfully, False otherwise.
