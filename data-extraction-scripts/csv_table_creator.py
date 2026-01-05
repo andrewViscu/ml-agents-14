@@ -30,7 +30,7 @@ def get_csv_columns():
         "epsilon",
         "lambd",
         "num_epoch",
-        "learning_rate_schedule"
+        "learning_rate_schedule",
     ]
 
 

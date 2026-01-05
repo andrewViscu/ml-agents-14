@@ -174,7 +174,7 @@ class ResourceMonitor(threading.Thread):
                                     except Exception:
                                         pass
                                 else:
-                                    # non-blocking call for 
+                                    # non-blocking call for
                                     # already initialized child
                                     try:
                                         child_cpu_val = float(
