@@ -102,7 +102,7 @@ def create_algorithm_labels(df):
     }
 
     # handle case sensitivity
-    algorithms = df['algorithm'].str.lower()
+    algorithms = df['trainer_type'].str.lower()
     labels = algorithms.map(algorithm_map).fillna(-1).astype(int).values
 
     return labels, algorithm_map
@@ -111,7 +111,7 @@ def create_algorithm_labels(df):
 def get_algorithm_data(df, algorithm_name):
     # filters dataframe to only include specific algorithm
 
-    mask = df['algorithm'].str.lower() == algorithm_name.lower()
+    mask = df['trainer_type'].str.lower() == algorithm_name.lower()
     return df[mask].copy()
 
 

@@ -178,13 +178,13 @@ class EnvironmentAlgorithmPredictor:
         for env in df['environment'].unique():
             env_data = df[df['environment'] == env]
 
-            for algo in env_data['algorithm'].unique():
-                algo_data = env_data[env_data['algorithm'] == algo]
+            for algo in env_data['trainer_type'].unique():
+                algo_data = env_data[env_data['trainer_type'] == algo]
 
                 # compute aggregate statistics
                 stats = {
                     'environment': env,
-                    'algorithm': algo,
+                    'trainer_type': algo,
                     'mean_reward': algo_data['mean_group_reward'].mean(),
                     'max_reward': algo_data['mean_group_reward'].max(),
                     'reward_std': algo_data['mean_group_reward'].std(),
@@ -210,7 +210,7 @@ class EnvironmentAlgorithmPredictor:
                 scores_df.groupby('environment')['final_reward'].idxmax()
                 ]
         )
-        return best[['environment', 'algorithm', 'final_reward']]
+        return best[['environment', 'trainer_type', 'final_reward']]
 
     def prepare_recommendation_data(self, df):
         # prepares data for training the recommendation model
@@ -252,7 +252,7 @@ class EnvironmentAlgorithmPredictor:
 
         # return algorithm with highest final reward
         best_idx = env_data['final_reward'].idxmax()
-        return env_data.loc[best_idx, 'algorithm']
+        return env_data.loc[best_idx, 'trainer_type']
 
 
 def compare_algorithms(df):
@@ -261,8 +261,8 @@ def compare_algorithms(df):
 
     print("\n=== Algorithm Comparison ===\n")
 
-    for algo in df['algorithm'].unique():
-        algo_data = df[df['algorithm'] == algo]
+    for algo in df['trainer_type'].unique():
+        algo_data = df[df['trainer_type'] == algo]
 
         print(f"Algorithm: {algo.upper()}")
         print(f"Total samples: {len(algo_data)}")
@@ -279,7 +279,7 @@ def predict_convergence(df, algorithm, threshold=0.1, window=10):
     # predicts if training will converge based on early metrics
     # looks at reward trend in early training
 
-    algo_data = df[df['algorithm'] == algorithm].copy()
+    algo_data = df[df['trainer_type'] == algorithm].copy()
 
     if len(algo_data) < window:
         return None, "Not enough data"

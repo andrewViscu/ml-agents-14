@@ -5,7 +5,10 @@ from csv_table_creator import write_csv_row, get_csv_columns
 from resource_py_script import ResourceMonitor
 
 
-def run_training(config_file_path, run_id, env_path, csv_output_path):
+def run_training(
+        config_file_path, run_id, env_path,
+        csv_output_path, config_hyperparams=None
+        ):
     """
     Runs mlagents-learn command and processes output in real-time,
     writing metrics to CSV.
@@ -15,6 +18,7 @@ def run_training(config_file_path, run_id, env_path, csv_output_path):
         run_id (str): Unique identifier for the training run.
         env_path(str): Path to the game's executable
         csv_output_path (str): Path to the CSV file where data will be written.
+        config_hyperparams (dict): Dictionary containing hyperparameters.
 
     Returns:
         int: Exit code of the mlagents-learn command
@@ -105,8 +109,8 @@ def run_training(config_file_path, run_id, env_path, csv_output_path):
                     # Prepare row data - handle None values properly
                     def format_value(val):
                         """Convert None to empty string,
-                        otherwise return the value."""
-                        return "" if val is None else val
+                         otherwise return the value."""
+                        return '' if val is None else val
 
                     row_data = {
                         "step": current_step,
@@ -132,22 +136,38 @@ def run_training(config_file_path, run_id, env_path, csv_output_path):
                         ),
                         "memory_usage_avg_mb": format_value(
                             resource_usage_data.get("memory usage avg mb")
-                        ),
+                            ),
                         "memory_usage_peak_mb": format_value(
-                            resource_usage_data.get("memory usage peak mb")
-                        ),
-                        "cpu_usage_avg_percent": format_value(
-                            resource_usage_data.get("cpu usage avg percent")
-                        ),
-                        "cpu_usage_peak_percent": format_value(
-                            resource_usage_data.get("cpu usage peak percent")
-                        ),
+                            resource_usage_data.get("memory usage peak mb")),
+                        "cpu_usage_avg_mb": format_value(
+                            resource_usage_data.get("cpu usage avg percent")),
+                        "cpu_usage_peak_mb": format_value(
+                            resource_usage_data.get("cpu usage peak percent")),
                         "gpu_usage_avg_mb": format_value(
-                            resource_usage_data.get("gpu usage avg mb")
-                        ),
+                            resource_usage_data.get("gpu usage avg mb")),
                         "gpu_usage_peak_mb": format_value(
-                            resource_usage_data.get("gpu usage peak mb")
-                        ),
+                            resource_usage_data.get("gpu usage peak mb")),
+                        # Add config hyperparameters
+                        "trainer_type":
+                            config_hyperparams.get("trainer_type", ""),
+                        "batch_size":
+                            config_hyperparams.get("batch_size", ""),
+                        "buffer_size":
+                            config_hyperparams.get("buffer_size", ""),
+                        "learning_rate":
+                            config_hyperparams.get("learning_rate", ""),
+                        "beta":
+                            config_hyperparams.get("beta", ""),
+                        "epsilon":
+                            config_hyperparams.get("epsilon", ""),
+                        "lambd":
+                            config_hyperparams.get("lambd", ""),
+                        "num_epoch":
+                            config_hyperparams.get("num_epoch", ""),
+                        "learning_rate_schedule":
+                            config_hyperparams.get(
+                                "learning_rate_schedule", ""
+                                ),
                     }
 
                     # Write to CSV
