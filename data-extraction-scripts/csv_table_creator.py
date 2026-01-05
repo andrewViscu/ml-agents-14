@@ -22,6 +22,7 @@ def get_csv_columns():
         "cpu_usage_peak_mb",
         "gpu_usage_avg_mb",
         "gpu_usage_peak_mb",
+        "trainer_type",
         "batch_size",
         "buffer_size",
         "learning_rate",
