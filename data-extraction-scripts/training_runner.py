@@ -139,9 +139,9 @@ def run_training(
                             ),
                         "memory_usage_peak_mb": format_value(
                             resource_usage_data.get("memory usage peak mb")),
-                        "cpu_usage_avg_mb": format_value(
+                        "cpu_usage_avg_percent": format_value(
                             resource_usage_data.get("cpu usage avg percent")),
-                        "cpu_usage_peak_mb": format_value(
+                        "cpu_usage_peak_percent": format_value(
                             resource_usage_data.get("cpu usage peak percent")),
                         "gpu_usage_avg_mb": format_value(
                             resource_usage_data.get("gpu usage avg mb")),
