@@ -3,6 +3,7 @@ import sys
 import os
 import re
 import yaml
+from pathlib import Path
 from csv_table_creator import create_csv_table
 from training_runner import run_training
 from tensorboard_metrics import TensorBoardMetrics
@@ -235,16 +236,37 @@ def main():
         print(f"\nError: {e}")
         sys.exit(1)
 
+    # Find tensorboard event files in results folder
     tb_results_root = os.path.join(project_root, "results")
-    tb_run_dir = os.path.join(tb_results_root, run_id, choosen_game)
-
+    tb_run_dir = os.path.join(tb_results_root, run_id)
+    
+    # Search for event files in the run directory or its subdirectories
+    tb_events_path = None
     if os.path.exists(tb_run_dir):
-        tb_metrics = TensorBoardMetrics(
-            events_path=tb_run_dir, train_csv_path=csv_output_path
-        )
-        tb_metrics.append_metrics()
+        # Check if event files are directly in the run directory
+        event_files = list(Path(tb_run_dir).glob("events.*"))
+        if event_files:
+            tb_events_path = tb_run_dir
+        else:
+            # Search in subdirectories for event files
+            for subdir in Path(tb_run_dir).iterdir():
+                if subdir.is_dir():
+                    event_files = list(subdir.glob("events.*"))
+                    if event_files:
+                        tb_events_path = str(subdir)
+                        break
+    
+    if tb_events_path:
+        try:
+            tb_metrics = TensorBoardMetrics(
+                events_path=tb_events_path, train_csv_path=csv_output_path
+            )
+            tb_metrics.append_metrics()
+            print(f"Successfully added TensorBoard metrics from {tb_events_path}")
+        except Exception as e:
+            print(f"Warning: Failed to load TensorBoard metrics from {tb_events_path}: {e}")
     else:
-        print(f"Warning: Failed to access TensorBoard metrics, {tb_run_dir}")
+        print(f"Warning: No TensorBoard event files found in {tb_run_dir}")
 
 
 if __name__ == "__main__":
