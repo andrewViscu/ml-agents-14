@@ -1,9 +1,12 @@
 # Project 2-1 Group 14
 
-This document outlines the instructions for running our data collection scripts and documentation on the metrics that are calculated and stored.
+This document outlines the instructions for running our data collection scripts and includes documentation of the metrics that are calculated and stored.
+
+---
+
 # Running Data Collection Scripts
 ### Requirements
-The following libraries and software versions are required to run the scripts.
+The following libraries (excluding those required by the ML-Agents library) and software versions are required to run the scripts.
 
 Software:
 - Unity version - 2023.2.12f1
@@ -14,43 +17,60 @@ Libraries:
 - pynvml
 
 ### Instructions
-Open your desired game in the Unity Editor.
+In order to train the models to collect data without having to open Unity every single run, an executable for your desired game must be created. The following tutorial can be used to create executables: 
+- https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manual/Learning-Environment-Executable.html
 
-Activate your python 3.10 virtual environment and run the following command from the root of the project to run the data collection scripts.
+>[!IMPORTANT]
+>Executables must be stored in the `training-envs` folder. For consistency, create a new appropriately named folder inside `training-envs` for each game.
+
+After an executable has been created, activate your python 3.10 virtual environment and run the following command from the root of the project to run the data collection scripts.
+
 ```
-python data-extraction-scripts/data_extraction_script.py <config file path> <run_id_name>
+python ./data-extraction-scripts/data_extraction_script.py <config_file_path> <training-env_path> <run_id>
 ```
+
 where:
-- ```<config file path>``` is the path to the ```.yaml``` file of the game you want to collect data for.
-- ```<run_id_name>``` is the ID for the training run.
+- `<config file path>` is the path to the `.yaml` file with hyperparameters of the game you want to collect data for.
+- `<training-env_path>` is the path to the executable for the chosen game.
+- `<run_id>` is the name ID for the training run.
 
-**Example:**
+>[!NOTE]
+>Config files are stored in the `unity` package. We decided to store the ML-Agents library files there for a cleaner developer experience.
+
+**Example run:**
 ```
-python data-extraction-scripts/data_extraction_script.py config/ppo/3DBall.yaml example_run
+python ./data-extraction-scripts/data_extraction_script.py unity/config/ppo/Worm.yaml training-envs/worm-windows/UnityEnvironment WORM_RUN1
 ```
 
-The program will prompt you to run the specified game in the Unity Editor:
-```
-[INFO] Listening on port 5004. Start training by pressing the Play button in the Unity Editor.
-```
-
-Press Play in the Unity Editor for your specified game and the collection process will begin.
 ### Data storage
-The generated CSV table from the training run will be stored in the ```training_data``` package (which you can find from the root) and will be named ```training_data.csv``` by default.
+The generated CSV table from the training run will be stored in the `training_data` package (which you can find from the root) and will be named `training_data_<run_id>.csv`, provided the `run_id`.
 
 ---
+
 # Data Metrics Documentation
 The list below contains the metrics that the scripts calculate and store. The names of the columns in the CSV table are the same as these:
-- **step** - The number of steps performed
-- **mean_reward** - The mean reward of the current run
-- **std_reward** - Standard deviation of the cumulative reward
-- **timestamp** - The time stamp of the training run
-- **run_id** - The run ID of the training session (used for distinction during custom machine learning model training)
-- **environment** - The environment in which the agent trains in (single or multi-agent)
-- **algorithm** - The algorithm the agent is using
-- **memory_usage_avg_mb** - Average memory usage in MB
-- **memory_usage_peak_mb** - Peak memory usage in MB
-- **cpu_usage_avg_mb** - Average CPU usage in MB
-- **cpu_usage_peak_mb** - Peak CPU usage in MB
-- **gpu_usage_avg_mb** - Average GPU usage in MB
-- **gpu_usage_peak_mb** - Peak GPU usage in MB
+- **step** - The number of steps performed.
+- **mean_reward** - The mean reward for the current run.
+- **mean_group_reward** - The mean reward of the group for the current run, applicable only to multi-agent environments.
+- **std_reward** - The standard deviation of the reward.
+- **time_elapsed** - The time elapsed of the current run.
+- **memory_usage_avg_mb** - Average memory usage in MB.
+- **memory_usage_peak_mb** - Peak memory usage in MB.
+- **cpu_usage_avg_percent** - Average CPU usage in percent.
+- **cpu_usage_peak_percent** - Peak CPU usage in percent.
+- **gpu_usage_avg_mb** - Average GPU usage in MB (can not be calculated if your system has an integrated graphics card).
+- **gpu_usage_peak_mb** - Peak GPU usage in MB.
+- **trainer_type** - The algorithm used by the agent.
+- **policy_entropy** - Policy entropy.
+- **losses_policy_loss** - Policy loss.
+- **losses_value_loss** - Value loss.
+
+Recorded hyperparameter values:
+- **batch_size**
+- **buffer_size**
+- **learning_rate**
+- **beta**
+- **epsilon**
+- **lambd**
+- **num_epoch**
+- **learning_rate_schedule**
