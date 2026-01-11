@@ -139,9 +139,9 @@ def run_training(
                             ),
                         "memory_usage_peak_mb": format_value(
                             resource_usage_data.get("memory usage peak mb")),
-                        "cpu_usage_avg_mb": format_value(
+                        "cpu_usage_avg_percent": format_value(
                             resource_usage_data.get("cpu usage avg percent")),
-                        "cpu_usage_peak_mb": format_value(
+                        "cpu_usage_peak_percent": format_value(
                             resource_usage_data.get("cpu usage peak percent")),
                         "gpu_usage_avg_mb": format_value(
                             resource_usage_data.get("gpu usage avg mb")),
@@ -167,6 +167,20 @@ def run_training(
                         "learning_rate_schedule":
                             config_hyperparams.get(
                                 "learning_rate_schedule", ""
+                                ),
+                        "buffer_init_steps":
+                            config_hyperparams.get("buffer_init_steps", ""),
+                        "tau":
+                            config_hyperparams.get("tau", ""),
+                        "steps_per_update":
+                            config_hyperparams.get("steps_per_update", ""),
+                        "save_replay_buffer":
+                            config_hyperparams.get("save_replay_buffer", ""),
+                        "init_entcoef":
+                            config_hyperparams.get("init_entcoef", ""),
+                        "reward_signal_steps_per_update":
+                            config_hyperparams.get(
+                                "reward_signal_steps_per_update", ""
                                 ),
                     }
 

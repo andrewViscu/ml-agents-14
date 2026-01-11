@@ -31,6 +31,12 @@ def get_csv_columns():
         "lambd",
         "num_epoch",
         "learning_rate_schedule",
+        "buffer_init_steps",
+        "tau",
+        "steps_per_update",
+        "steps_per_update",
+        "init_entcoef",
+        "reward_signal_steps_per_update",
     ]
 
 

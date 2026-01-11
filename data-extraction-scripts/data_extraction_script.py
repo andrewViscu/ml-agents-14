@@ -33,6 +33,12 @@ def parse_config_file(config_file_path):
             "lambd": "",
             "num_epoch": "",
             "learning_rate_schedule": "",
+            "buffer_init_steps": "",
+            "tau": "",
+            "steps_per_update": "",
+            "save_replay_buffer": "",
+            "init_entcoef": "",
+            "reward_signal_steps_per_update": "",
         }
 
         # Extract behavior config
@@ -57,6 +63,24 @@ def parse_config_file(config_file_path):
                 hyperparams["num_epoch"] = hp.get("num_epoch", "")
                 hyperparams["learning_rate_schedule"] = hp.get(
                     "learning_rate_schedule", ""
+                    )
+                hyperparams["buffer_init_steps"] = hp.get(
+                    "buffer_init_steps", ""
+                    )
+                hyperparams["tau"] = hp.get(
+                    "tau", ""
+                    )
+                hyperparams["steps_per_update"] = hp.get(
+                    "steps_per_update", ""
+                    )
+                hyperparams["save_replay_buffer"] = hp.get(
+                    "save_replay_buffer", ""
+                    )
+                hyperparams["init_entcoef"] = hp.get(
+                    "init_entcoef", ""
+                    )
+                hyperparams["reward_signal_steps_per_update"] = hp.get(
+                    "reward_signal_steps_per_update", ""
                     )
 
             # Extract network settings
@@ -97,6 +121,12 @@ def parse_config_file(config_file_path):
             "lambd": "",
             "num_epoch": "",
             "learning_rate_schedule": "",
+            "buffer_init_steps": "",
+            "tau": "",
+            "steps_per_update": "",
+            "save_replay_buffer": "",
+            "init_entcoef": "",
+            "reward_signal_steps_per_update": "",
         }
 
 
