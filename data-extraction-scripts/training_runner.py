@@ -168,6 +168,20 @@ def run_training(
                             config_hyperparams.get(
                                 "learning_rate_schedule", ""
                                 ),
+                        "buffer_init_steps":
+                            config_hyperparams.get("buffer_init_steps", ""),
+                        "tau":
+                            config_hyperparams.get("tau", ""),
+                        "steps_per_update":
+                            config_hyperparams.get("steps_per_update", ""),
+                        "save_replay_buffer":
+                            config_hyperparams.get("save_replay_buffer", ""),
+                        "init_entcoef":
+                            config_hyperparams.get("init_entcoef", ""),
+                        "reward_signal_steps_per_update":
+                            config_hyperparams.get(
+                                "reward_signal_steps_per_update", ""
+                                ),
                     }
 
                     # Write to CSV

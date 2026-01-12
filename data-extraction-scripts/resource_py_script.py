@@ -255,8 +255,9 @@ class ResourceMonitor(threading.Thread):
                 self._cpu_peak = float(cpu)
             # Debug: print first few CPU readings to verify it's working
             if self._cpu_count <= 3:
-                print(f"ResourceMonitor: CPU sample {self._cpu_count}:"
-                      " {cpu:.2f}%")
+                print(
+                    f"ResourceMonitor: CPU sample {self._cpu_count}:{cpu:.2f}%"
+                    )
         if isinstance(mem, (int, float)):
             self._mem_total += float(mem)
             self._mem_count += 1
