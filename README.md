@@ -35,7 +35,16 @@ where:
 - `<run_id>` is the name ID for the training run.
 
 >[!NOTE]
->Config files are stored in the `unity` package. We decided to store the ML-Agents library files there for a cleaner developer experience.
+>Config files are stored in the `unity/config` package. We decided to store the ML-Agents library files there for a cleaner developer experience.
+
+Our custom config files can be found in the folders inside the `config` package and are named the following:
+**PPO:**
+- Worm_Cai
+- Worm_Schulman_MuJoCo
+- Worm_Schulman_Roboschool
+- Worm_Zhang
+**SAC**
+- Worm_Haarnoja
 
 **Example run:**
 ```
