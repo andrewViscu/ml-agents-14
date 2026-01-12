@@ -42,13 +42,13 @@ Our custom config files can be found in the `unity/config/custom` package.
 >[!WARNING]
 >Metrics from tensorboard such as policy loss, entropy, and value loss are recorded at the end of a training run i.e. after the config file has reached it's `max_steps` limit. For example, if a config file has `max_steps` set at 2 million, the tensorboard metrics will be recorded only if the model is trained for 2 million steps. That way, training can automatically finish on it's own.
 
-### Example run:
+### Data storage
+The generated CSV table from the training run will be stored in the `training_data` package (which you can find from the root) and will be named `training_data_<run_id>.csv`, provided the `run_id`.
+
+### Example Run
 ```
 python ./data-extraction-scripts/data_extraction_script.py unity/config/custom/Worm_Cai.yaml training-envs/worm-windows/UnityEnvironment WORM_RUN1
 ```
-
-### Data storage
-The generated CSV table from the training run will be stored in the `training_data` package (which you can find from the root) and will be named `training_data_<run_id>.csv`, provided the `run_id`.
 
 ---
 
