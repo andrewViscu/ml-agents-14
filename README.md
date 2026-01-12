@@ -37,24 +37,18 @@ where:
 >[!NOTE]
 >Config files are stored in the `unity/config` package. We decided to store the ML-Agents library files there for a cleaner developer experience.
 
-Our custom config files can be found in the folders inside the `config` package and are named the following:
+Our custom config files can be found in the `unity/config/custom` package.
 
-**PPO:**
-- Worm_Cai
-- Worm_Schulman_MuJoCo
-- Worm_Schulman_Roboschool
-- Worm_Zhang
-
-**SAC:**
-- Worm_Haarnoja
-
-**Example run:**
-```
-python ./data-extraction-scripts/data_extraction_script.py unity/config/ppo/Worm.yaml training-envs/worm-windows/UnityEnvironment WORM_RUN1
-```
+>[!WARNING]
+>Metrics from tensorboard such as policy loss, entropy, and value loss are recorded at the end of a training run i.e. after the config file has reached it's `max_steps` limit. For example, if a config file has `max_steps` set at 2 million, the tensorboard metrics will be recorded only if the model is trained for 2 million steps. That way, training can automatically finish on it's own.
 
 ### Data storage
 The generated CSV table from the training run will be stored in the `training_data` package (which you can find from the root) and will be named `training_data_<run_id>.csv`, provided the `run_id`.
+
+### Example Run
+```
+python ./data-extraction-scripts/data_extraction_script.py unity/config/custom/Worm_Cai.yaml training-envs/worm-windows/UnityEnvironment WORM_RUN1
+```
 
 ---
 
