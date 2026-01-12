@@ -45,7 +45,7 @@ Our custom config files can be found in the folders inside the `config` package 
 - Worm_Schulman_Roboschool
 - Worm_Zhang
 
-**SAC**
+**SAC:**
 - Worm_Haarnoja
 
 **Example run:**
