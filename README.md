@@ -4,7 +4,7 @@ This document outlines the instructions for running our data collection scripts 
 
 ---
 
-## Running Data Collection Scripts
+# Running Data Collection Scripts
 
 ## Requirements
 
@@ -55,7 +55,7 @@ python ./data-extraction-scripts/data_extraction_script.py unity/config/custom/W
 
 ---
 
-## Data Metrics Documentation
+# Data Metrics Documentation
 
 The list below contains the metrics that the scripts calculate and store. The names of the columns in the CSV table are the same as these:
 
@@ -85,3 +85,7 @@ Recorded hyperparameter values:
 - **lambd**
 - **num_epoch**
 - **learning_rate_schedule**
+
+---
+
+# Machine Learning Model
