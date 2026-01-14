@@ -8,8 +8,8 @@ behaviors:
       learning_rate: 0.0005
       beta: 0.005
       epsilon: 0.2
-      lambd: 0.9               # lower GAE lambda for less bias from long horizons
-      num_epoch: 4             # one extra epoch over baseline
+      lambd: 0.9
+      num_epoch: 4
       learning_rate_schedule: constant
 
     network_settings:
@@ -20,12 +20,12 @@ behaviors:
 
     reward_signals:
       extrinsic:
-        gamma: 0.98            # slightly shorter discount
+        gamma: 0.98
         strength: 1.0
 
     keep_checkpoints: 5
     max_steps: 5000000
-    time_horizon: 512          # shorter horizon for more frequent bootstrapping
+    time_horizon: 512
     summary_freq: 10000
 
     self_play:
