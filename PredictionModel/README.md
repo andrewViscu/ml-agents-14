@@ -1,80 +1,94 @@
-# ML-Agents Training Predictor
+# ML-Agents Prediction Models
 
-## Group 14 - BCS2720 Project 2.1
+Group 14 Prediction Model
 
-Predicts ML agent performance and compares training algorithms (PPO, SAC, POCA) using data collected from Unity ML-Agents environments.
+Predicts resource requirements and final performance for Unity ML-Agents training runs.
 
-## Usage
-
-### Basic usage (run all analyses):
+## Quick Start
 
 ```bash
-python main.py --data_dir ./data
+pip install pandas numpy scikit-learn
 ```
 
-## What Each Mode Does
+### Performance Prediction
 
-### reward
+Predicts final performance from first 500k training steps.
 
-Predicts if a training step will have good or bad reward based on resource metrics.
-Uses random forest with 5-fold cross validation.
+```bash
+python performance_predictor.py train --data_dir ../training-data
+python performance_predictor.py evaluate --data_dir ../training-data
+```
 
-### algorithm
+### Resource Prediction
 
-Predicts which algorithm (PPO/SAC/POCA) is being used.
-Framework for comparing algorithm performance.
-**Note: needs data from multiple algorithms to be useful**
+Predicts training time, CPU, and RAM usage from configuration.
 
-### environment
+```bash
+python resource_predictor.py train --our_data ../training-data --shared_data ../shared-data/multi_run
+python resource_predictor.py evaluate --our_data ../training-data --shared_data ../shared-data/multi_run
+```
 
-Analyzes performance across different environments (3DBall, SoccerTwos, etc).
-Recommends best algorithm for each environment.
+## Results
 
-### convergence
+### Resource Prediction (RQ1)
 
-Checks if training runs are converging based on reward trends.
+| Target | Runs | R-squared | MAPE | Notes |
+|--------|------|-----------|------|-------|
+| Training Time | 3,913 | 0.54 | 41% | From hyperparameters only |
+| CPU Usage | 1,462 | 0.79 | 41% | With hardware specs |
+| RAM Usage | 1,462 | 0.62 | 23% | With hardware specs |
+| CPU Usage | 3,913 | 0.09 | 13% | Without hardware info |
+| RAM Usage | 3,913 | 0.04 | 16% | Without hardware info |
+
+### Performance Prediction (RQ2) - Final Reward
+
+**Per-Game Results (training-data, 500k cutoff):**
+
+| Game | Runs | R-squared | Reward Range |
+|------|------|-----------|--------------|
+| Worm | 22 | 0.48 | 17 - 1207 |
+| SoccerTwos | 4 | -1.39 | -0.09 - 0.10 |
+| Combined | 26 | 0.56 | - |
+
+The combined R2 (0.56) is misleading because Worm's larger reward variance dominates the metric. SoccerTwos has a negative R2 due to insufficient samples (4 runs) and a narrow reward range.
+
+**Effect of Early Data Cutoff (combined dataset):**
+
+| Cutoff | Runs | R-squared |
+|--------|------|-----------|
+| 100,000 steps | 1,192 | 0.26 |
+| 200,000 steps | 1,176 | 0.31 |
+| 300,000 steps | 919 | 0.44 |
+| 400,000 steps | 918 | 0.52 |
+| 500,000 steps | 640 | 0.66 |
+
+Key findings:
+- Different games have incompatible reward scales, making combined prediction unreliable
+- Per-game models are more meaningful but require sufficient samples per game
+- More early training data improves predictions (R2: 0.26 at 100k to 0.66 at 500k)
+
+## Structure
+
+```
+PredictionModel/
+    performance_predictor.py  # CLI for performance prediction
+    resource_predictor.py     # CLI for resource prediction
+    models/
+        base_predictor.py     # Shared ML functionality
+        performance_model.py  # Performance prediction model
+        resource_model.py     # Resource prediction model
+    utils/
+        data_loader.py        # Data loading utilities
+```
 
 ## Data Format
 
-CSV files should have these columns:
+Required CSV columns:
+- step (or steps, training_step)
+- A reward column (mean_reward, mean_group_reward)
 
-- `step` - training step number
-- `mean_reward` - individual agent reward
-- `mean_group_reward` - team/group reward
-- `run_id` - unique identifier for the run
-- `environment` - environment name (e.g., 'multi-agent', '3dball')
-- `algorithm` - algorithm used ('ppo', 'sac', 'poca')
-- `memory_usage_avg_mb` - average memory usage
-- `memory_usage_peak_mb` - peak memory usage
-- `cpu_usage_avg_mb` - average CPU usage
-- `cpu_usage_peak_mb` - peak CPU usage
-- `gpu_usage_avg_mb` - average GPU usage (optional)
-- `gpu_usage_peak_mb` - peak GPU usage (optional)
-
-## Adding New Data
-
-1. Run training with your data collection scripts
-2. Save CSV files to the `data/` directory
-3. Make sure column names match the format above
-4. Run `python main.py` to analyze
-
-## TODO
-
-- Add more training runs from different algorithms (PPO, SAC)
-- Add data from different environments (3DBall, Hallway, StrikerVsGoalie)
-- Implement early stopping prediction
-- Add visualization/plots
-- Save trained models for later use
-
-## Current Results
-
-With soccer_twos POCA data only:
-
-- Reward prediction CV accuracy: ~69.7%
-- Algorithm prediction: needs more algorithms
-
-## Dependencies
-
-- pandas
-- numpy
-- scikit-learn
+Optional:
+- run_id, environment, algorithm
+- Resource metrics (cpu_usage_percent, ram_usage_mb)
+- Hyperparameters (learning_rate, batch_size)
+- Hardware info (cpu_model, gpu_model, total_ram)
