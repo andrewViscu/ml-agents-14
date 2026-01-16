@@ -1,36 +1,36 @@
-# ML-Agents Training Predictor
+# ML-Agents Prediction Models
 
-## Group 14 - BCS2720 Project 2.1
+Group 14 Prediction Model
 
-Predicts ML agent performance and compares training algorithms (PPO, SAC, POCA) using data collected from Unity ML-Agents environments.
+Predicts resource requirements and final performance for Unity ML-Agents training runs.
 
-## Usage
-
-### Basic usage (run all analyses):
+## Quick Start
 
 ```bash
-python main.py --data_dir ./data
+pip install pandas numpy scikit-learn
 ```
 
-## What Each Mode Does
+### Performance Prediction
 
-### reward
+Predicts final performance from first 500k training steps.
 
-Predicts if a training step will have good or bad reward based on resource metrics.
-Uses random forest with 5-fold cross validation.
+```bash
+python performance_predictor.py train --data_dir ../training-data
+python performance_predictor.py evaluate --data_dir ../training-data
+```
 
-### algorithm
+### Resource Prediction
 
-Predicts which algorithm (PPO/SAC/POCA) is being used.
-Framework for comparing algorithm performance.
-**Note: needs data from multiple algorithms to be useful**
+Predicts training time, CPU, and RAM usage from configuration.
 
-### environment
+```bash
+python resource_predictor.py train --our_data ../training-data --shared_data ../shared-data/multi_run
+python resource_predictor.py evaluate --our_data ../training-data --shared_data ../shared-data/multi_run
+```
 
-Analyzes performance across different environments (3DBall, SoccerTwos, etc).
-Recommends best algorithm for each environment.
+## Results
 
-### convergence
+### Resource Prediction (RQ1)
 
 | Target | Runs | R-squared | MAPE | Notes |
 |--------|------|-----------|------|-------|
@@ -63,14 +63,13 @@ The combined R2 (0.56) is misleading because Worm's larger reward variance domin
 | 500,000 steps | 640 | 0.66 |
 
 Key findings:
-
 - Different games have incompatible reward scales, making combined prediction unreliable
 - Per-game models are more meaningful but require sufficient samples per game
 - More early training data improves predictions (R2: 0.26 at 100k to 0.66 at 500k)
 
 ## Structure
 
-``` bash
+```
 PredictionModel/
     performance_predictor.py  # CLI for performance prediction
     resource_predictor.py     # CLI for resource prediction
@@ -85,12 +84,10 @@ PredictionModel/
 ## Data Format
 
 Required CSV columns:
-
 - step (or steps, training_step)
 - A reward column (mean_reward, mean_group_reward)
 
 Optional:
-
 - run_id, environment, algorithm
 - Resource metrics (cpu_usage_percent, ram_usage_mb)
 - Hyperparameters (learning_rate, batch_size)
