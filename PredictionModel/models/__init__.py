@@ -1,4 +1,13 @@
 # models package
-from .base_predictor import BasePredictor
-from .performance_model import PerformanceModel
-from .resource_model import ResourceModel
+from .random_forest import (
+    MyRandomForest,
+    cross_validation,
+    analyze_feature_importance
+)
+
+from .algorithm_predictor import (
+    AlgorithmPredictor,
+    EnvironmentAlgorithmPredictor,
+    compare_algorithms,
+    predict_convergence
+)

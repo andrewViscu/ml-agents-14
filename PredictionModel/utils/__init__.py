@@ -1,11 +1,12 @@
 # utils package
 from .data_loader import (
-    load_csv,
-    load_directory,
-    find_column,
-    normalize_columns,
-    get_metadata,
-    aggregate_run,
-    load_resource_data,
-    extract_features
+    load_single_file,
+    load_training_data,
+    load_multiple_files,
+    extract_features,
+    create_reward_labels,
+    create_algorithm_labels,
+    get_algorithm_data,
+    split_by_run,
+    compute_run_statistics
 )

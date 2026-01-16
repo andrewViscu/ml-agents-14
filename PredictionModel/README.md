@@ -1,36 +1,36 @@
-# ML-Agents Prediction Models
+# ML-Agents Training Predictor
 
-Group 14 Prediction Model
+## Group 14 - BCS2720 Project 2.1
 
-Predicts resource requirements and final performance for Unity ML-Agents training runs.
+Predicts ML agent performance and compares training algorithms (PPO, SAC, POCA) using data collected from Unity ML-Agents environments.
 
-## Quick Start
+## Usage
 
-```bash
-pip install pandas numpy scikit-learn
-```
-
-### Performance Prediction
-
-Predicts final performance from first 500k training steps.
+### Basic usage (run all analyses):
 
 ```bash
-python performance_predictor.py train --data_dir ../training-data
-python performance_predictor.py evaluate --data_dir ../training-data
+python main.py --data_dir ./data
 ```
 
-### Resource Prediction
+## What Each Mode Does
 
-Predicts training time, CPU, and RAM usage from configuration.
+### reward
 
-```bash
-python resource_predictor.py train --our_data ../training-data --shared_data ../shared-data/multi_run
-python resource_predictor.py evaluate --our_data ../training-data --shared_data ../shared-data/multi_run
-```
+Predicts if a training step will have good or bad reward based on resource metrics.
+Uses random forest with 5-fold cross validation.
 
-## Results
+### algorithm
 
-### Resource Prediction (RQ1)
+Predicts which algorithm (PPO/SAC/POCA) is being used.
+Framework for comparing algorithm performance.
+**Note: needs data from multiple algorithms to be useful**
+
+### environment
+
+Analyzes performance across different environments (3DBall, SoccerTwos, etc).
+Recommends best algorithm for each environment.
+
+### convergence
 
 | Target | Runs | R-squared | MAPE | Notes |
 |--------|------|-----------|------|-------|
