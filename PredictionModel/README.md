@@ -63,13 +63,14 @@ The combined R2 (0.56) is misleading because Worm's larger reward variance domin
 | 500,000 steps | 640 | 0.66 |
 
 Key findings:
+
 - Different games have incompatible reward scales, making combined prediction unreliable
 - Per-game models are more meaningful but require sufficient samples per game
 - More early training data improves predictions (R2: 0.26 at 100k to 0.66 at 500k)
 
 ## Structure
 
-```
+``` bash
 PredictionModel/
     performance_predictor.py  # CLI for performance prediction
     resource_predictor.py     # CLI for resource prediction
@@ -84,10 +85,12 @@ PredictionModel/
 ## Data Format
 
 Required CSV columns:
+
 - step (or steps, training_step)
 - A reward column (mean_reward, mean_group_reward)
 
 Optional:
+
 - run_id, environment, algorithm
 - Resource metrics (cpu_usage_percent, ram_usage_mb)
 - Hyperparameters (learning_rate, batch_size)
