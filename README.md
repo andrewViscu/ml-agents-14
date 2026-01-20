@@ -45,7 +45,7 @@ In order to train the models to collect data without having to open Unity every 
 - <https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manual/Learning-Environment-Executable.html>
 
 >[!IMPORTANT]
->Executables must be stored in the `training-envs` folder. For consistency, create a new appropriately named folder inside `training-envs` for each game.
+>Executables should be stored in the `training-envs` folder. For consistency, create a new appropriately named folder inside `training-envs` for each game.
 
 After an executable has been created, activate your python 3.10 virtual environment and run the following command from the root of the project to run the data collection scripts.
 

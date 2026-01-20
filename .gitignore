@@ -8,6 +8,10 @@
 
 # Training environments
 /envs
+/training-envs/worm-windows
+/training-envs/soccer-twos-windows
+/training-envs/test
+/training-envs/test2
 
 # Environemnt logfile
 *Project.log
