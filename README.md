@@ -12,8 +12,30 @@ In this repository, the data collection scripts are located in the `data-extract
 
 The following libraries (excluding those required by the ML-Agents library) and software versions are required to run the scripts.
 
+1- Install unity editor, version: 2022.3.14f1
+2- Install python and anaconda
+3- create a python virtual environment (venv) using
+
 ```bash
-Run pip install -r requirements.txt
+“conda create -n mlagents python=3.10.8 && conda activate mlagents
+```
+
+4- Build the project wheel using:
+
+```bash
+“conda install "grpcio=1.48.2" -c conda-forge” 
+```
+
+5-  ⁠⁠install mlagents (inside this venv) by using
+
+```bash
+“python -m pip install mlagents==1.1.0”
+```
+
+6- Install all required libraries using
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## Instructions
@@ -99,6 +121,7 @@ Recorded hyperparameter values:
 ---
 
 # Machine Learning Model
+
 Prediction models for SoccerTwos and Worm environments in Unity ML-Agents.
 
 ## Research Questions
@@ -109,18 +132,18 @@ Prediction models for SoccerTwos and Worm environments in Unity ML-Agents.
 
 ## Quick Start
 
-open the PredictionsModels directory and then by running these scripts you can get the results used in the report and readme. 
+open the PredictionsModels directory and then by running these scripts you can get the results used in the report and readme.
 
 ### RQ1: Resource Prediction
 
 ```bash
-python rq1_resource_prediction.py --training_data ../training-data
+python PredictionModels/rq1_resource_prediction.py --training_data training-data
 ```
 
 ### RQ2: Reward Prediction
 
 ```bash
-python rq2_hyperparameter_prediction.py --training_data ../training-data --shared_data ../shared-data
+python PredictionModels/rq2_hyperparameter_prediction.py --training_data training-data --shared_data shared-data
 ```
 
 ## Results
@@ -159,7 +182,7 @@ python rq2_hyperparameter_prediction.py --training_data ../training-data --share
 
 ## Files
 
-```
+```bash
 PredictionModels/
 ├── rq1_resource_prediction.py
 ├── rq2_hyperparameter_prediction.py
@@ -177,6 +200,7 @@ PredictionModels/
 Ensemble: Gradient Boosting (70%) + Ridge Regression (30%)
 
 Cross-validation:
+
 - RQ1: GroupKFold (5 folds, grouped by run)
 - RQ2: KFold (5 folds)
 
@@ -199,7 +223,7 @@ Additional scripts exploring alternative approaches and extended analysis beyond
 Tests the original RQ2 approach: predicting final reward from early training data at different step cutoffs.
 
 ```bash
-python cutoff_analysis.py --training_data ../../training-data --shared_data ../../shared-data
+python PredictionModels/extra/cutoff_analysis.py --training_data training-data --shared_data shared-data
 ```
 
 **Results (423 runs with time-series data):**
@@ -222,7 +246,7 @@ More early training data improves predictions, but requires waiting longer befor
 Extends RQ2 to all available games to test if single-agent vs multi-agent environments differ in predictability.
 
 ```bash
-python all_games_reward_prediction.py --shared_data ../../shared-data
+python PredictionModels/extra/all_games_reward_prediction.py --shared_data shared-data
 ```
 
 **Results:**
@@ -242,6 +266,7 @@ python all_games_reward_prediction.py --shared_data ../../shared-data
 **Findings:**
 
 Predictability depends on:
+
 1. **Sample size** - need 30+ runs for reliable results
 2. **Reward range** - narrow ranges (SoccerTwos: 0.1, Hallway: 1.4) yield poor R²
 3. **HP variation** - identical hyperparameters make prediction impossible
