@@ -2,7 +2,7 @@
 
 This document outlines the instructions for running our data collection scripts, documentation of the metrics that are calculated and stored, and instructions on how to run the prediction model.
 
-In this repository, the data collection scripts are located in the `data-extraction-scripts` package. The prediction model files are in the `PredictionModel` package.
+In this repository, the data collection scripts are located in the `data-extraction-scripts` package. The prediction model files are in the `PredictionModels` package.
 
 ---
 
