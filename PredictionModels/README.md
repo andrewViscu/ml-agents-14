@@ -64,10 +64,13 @@ python rq2_hyperparameter_prediction.py --training_data ../training-data --share
 PredictionModels/
 ├── rq1_resource_prediction.py
 ├── rq2_hyperparameter_prediction.py
-└── utils/
-    ├── cross_validation.py
-    ├── step_level_resource_loader.py
-    └── hyperparameter_data_loader.py
+├── utils/
+│   ├── cross_validation.py
+│   ├── step_level_resource_loader.py
+│   └── hyperparameter_data_loader.py
+└── extra/
+    ├── cutoff_analysis.py
+    └── all_games_reward_prediction.py
 ```
 
 ## Model
